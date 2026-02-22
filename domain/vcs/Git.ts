@@ -1,4 +1,4 @@
-interface Git { 
+export interface Git { 
     commit(): void
 
     pull(): void

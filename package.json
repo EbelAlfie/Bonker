@@ -3,8 +3,13 @@
     "axios": "^1.13.5",
     "dotenv": "^17.3.1",
     "grammy": "^1.40.0",
+    "octokit": "^5.0.5",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "serve": "npx tsx main.ts",
+    "chat": "npx tsx modules/chat/index.ts"
   },
   "devDependencies": {
     "@types/node": "^25.3.0"
