@@ -1,7 +1,7 @@
 import { Bot, CommandContext, Context } from "grammy";
 import { TeleConfig } from "./Config";
 import { ChatBot } from "../../domain/chat/ChatBot";
-import { Command } from "../../domain/chat/Command";
+import { Command, Message } from "../../domain/chat/Command";
 
 export class TelegramBot implements ChatBot { 
     bot: Bot
@@ -25,7 +25,7 @@ export class TelegramBot implements ChatBot {
         )
 
         this.commands.forEach(value => {
-            this.bot.command(value.name, async ctx => this.runCommand(value, ctx))
+            this.bot.command(value.name, async ctx => this.runCommand(ctx, value))
         })
 
         this.bot.on("message:text", this.onMessage.bind(this))
@@ -37,11 +37,21 @@ export class TelegramBot implements ChatBot {
         this.commands = commands
     }
 
-    private async runCommand(command: Command, ctx: Context) { 
-        ctx.reply(command.description)
+    runCommand(ctx: Context, command: Command) { 
+        const item = ctx.match
+        const message: Message = {
+            command: command.name,
+            text: item
+        }
+        command.handler(message)
+        this.executeCommand(command)
     }
 
     executeCommand(command: Command): void {
+        
+    }
+
+    sendMessage(): void {
         
     }
 

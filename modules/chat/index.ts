@@ -10,7 +10,7 @@ function main() {
     const teleg = new TelegramBot(config)
 
     teleg.registerCommand([
-        { name: "test", description: "Create a test"}
+        { name: "test", description: "Create a test", handler: (arg) => {}}
     ])
 
     teleg.start()

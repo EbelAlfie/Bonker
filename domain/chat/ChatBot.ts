@@ -6,4 +6,6 @@ export interface ChatBot {
     registerCommand(commands: Command[]): void
 
     executeCommand(command: Command): void
+
+    sendMessage(): void
 }

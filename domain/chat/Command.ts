@@ -1,4 +1,10 @@
 export type Command = {
     name: string,
-    description: string
+    description: string,
+    handler: (...args: any[]) => void
+}
+
+export type Message = {
+    command: string,
+    text: string | RegExpMatchArray | undefined
 }
