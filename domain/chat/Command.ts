@@ -6,5 +6,6 @@ export type Command = {
 
 export type Message = {
     command: string,
-    text: string | RegExpMatchArray | undefined
+    text: string | RegExpMatchArray | undefined,
+    reply: (message: string) => Promise<void>
 }

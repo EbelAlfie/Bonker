@@ -41,18 +41,12 @@ export class TelegramBot implements ChatBot {
         const item = ctx.match
         const message: Message = {
             command: command.name,
-            text: item
+            text: item,
+            reply: async (message: string) => {
+                await ctx.reply(message)
+            }
         }
         command.handler(message)
-        this.executeCommand(command)
-    }
-
-    executeCommand(command: Command): void {
-        
-    }
-
-    sendMessage(): void {
-        
     }
 
     private async onStart(ctx: CommandContext<Context>) { 

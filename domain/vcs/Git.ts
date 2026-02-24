@@ -1,9 +1,24 @@
 export interface Git { 
-    commit(): void
+    clone(workingDir: string): Promise<string>
+
+    checkout(branch: string): Promise<void>
+
+    add(files: string | string[]): Promise<void>
+
+    commit(message: string | string[], files: string | string[]): Promise<void>
+
+    push(branch: string): Promise<void>
 
     pull(): void
 
-    push(): void
-
-    pullRequest(): void
+    pullRequest(
+        {
+            sourceBranch,
+            targetBranch
+        }: 
+        {
+            sourceBranch: string, 
+            targetBranch: string
+        }
+    ): Promise<void>
 }
