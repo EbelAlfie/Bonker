@@ -1,35 +1,44 @@
-import { existsSync, writeFile, writeFileSync } from "fs";
+import * as fs from "fs";
 import { Workspace } from "../../domain/file/Workspace";
 import path from "path";
 import { rm } from "fs/promises";
+import { FileSanitizer } from "../ollama/FileSanitizer";
 
 export class FileManager implements Workspace {
+    sanitizer: FileSanitizer
+
     workingDir: string = path.join(__dirname, "tmp")
 
-    constructor(workingDir: string = path.join(__dirname, "tmp")) { 
+    constructor(workingDir: string = this.workingDir) { 
         this.workingDir = workingDir
+        this.sanitizer = new FileSanitizer()
     }
 
     updateWorkspace(newDir: string): void { 
         this.workingDir = newDir
     }
 
-    createNewFile(fileName: string): string {
-        if (!existsSync(this.workingDir)) {
+    async readFile(fileName: string): Promise<Buffer<ArrayBuffer> | undefined> { 
+        const fullPath = path.join(this.workingDir, fileName)
+
+        try { 
+            const file = fs.readFileSync(fullPath)
+            return file
+        } catch(error) { 
+            return undefined
+        }
+    }
+
+    createNewFile(fileName: string, content: string): string {
+        const formattedContent = this.sanitizer.sanitizeCodeResponse(content)
+
+        if (!fs.existsSync(this.workingDir) || !formattedContent) {
             console.log("No dir")
             throw new Error("No dir")
         }
 
-        const isi = `
-        class LoginViewModelTest {
-            fun should login successfully() {
-                // TODO
-            }
-        }
-        `
-
         const realPath = path.join(this.workingDir, fileName)
-        writeFileSync(realPath, isi)
+        fs.writeFileSync(realPath, formattedContent)
         return realPath
     }
 

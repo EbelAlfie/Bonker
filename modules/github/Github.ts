@@ -15,11 +15,14 @@ export class Github implements Git { //retry mechanism?
     config: GitConfig
     client: Octokit
     localGit: SimpleGit
+    repo: string
 
     constructor(config: GitConfig) { 
         this.config = config
         this.client = new Octokit({ auth: Config.GIT_REMOTE_TOKEN })
         this.localGit = simpleGit()
+
+        this.repo = getRepoName(this.config.repoUrl) ?? ""
     }
     
     async clone(workingDir: string): Promise<string> { 
@@ -78,20 +81,34 @@ export class Github implements Git { //retry mechanism?
             sourceBranch: string, 
             targetBranch: string
         }
-    ): Promise<void> {
-        const repo = getRepoName(this.config.repoUrl)
-        
-        if (!repo) {
-            throw new Error("No repository found")
-        }
+    ): Promise<number> {
 
-        await this.client.pulls.create({ 
+        let result = await this.client.pulls.create({ 
             owner: this.config.owner,
-            repo: repo,
+            repo: this.repo,
             title: "title",
             body: "Body",
             head: sourceBranch,
             base: targetBranch
         })
+
+        return result.data.number
     } 
+
+    async deleteBranch(branch: string): Promise<void> {
+        await this.client.rest.git.deleteRef({ 
+            owner: this.config.owner,
+            repo: this.repo,
+            ref: branch
+        })
+    }
+
+    async updatePullRequest(number: number, state: "open" | "closed"): Promise<void> {
+        await this.client.pulls.update({
+            owner: this.config.owner,
+            repo: this.repo,
+            pull_number: number,
+            state: state
+        })
+    }
 }

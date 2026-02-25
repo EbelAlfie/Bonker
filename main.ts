@@ -4,6 +4,7 @@ import { TeleConfig } from "./modules/chat/Config"
 import { TelegramBot } from "./modules/chat/Telegram"
 import { FileManager } from "./modules/file/FileManager"
 import { GitConfig, Github } from "./modules/github/Github"
+import { OllamaAgent, OllamaConfig } from "./modules/ollama/OllamaAgent"
 
 const teleConfig: TeleConfig = {
     token: Config.TELEGRAM_TOKEN
@@ -15,14 +16,16 @@ const gitConf: GitConfig = {
     branch: "main"
 }
 
-const chatBot = new TelegramBot(teleConfig)
-const git = new Github(gitConf)
-const fileManager = new FileManager()
+const llmConfig: OllamaConfig = {
+    baseUrl: "http://localhost:11434",
+    baseModel: "qwen2.5-coder:7b"
+}
 
 let app = new App({
-    chatBot: chatBot,
-    git: git,
-    fileManager: fileManager
+    chatBot: new TelegramBot(teleConfig),
+    git: new Github(gitConf),
+    fileManager: new FileManager(),
+    llm: new OllamaAgent(llmConfig)
 })
 
 app.start()

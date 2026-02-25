@@ -38,7 +38,10 @@ export class TelegramBot implements ChatBot {
     }
 
     runCommand(ctx: Context, command: Command) { 
-        const item = ctx.match
+        let item = ctx.match
+
+        if (Array.isArray(item)) { item = item[0] }
+
         const message: Message = {
             command: command.name,
             text: item,

@@ -20,5 +20,9 @@ export interface Git {
             sourceBranch: string, 
             targetBranch: string
         }
-    ): Promise<void>
+    ): Promise<number>
+
+    deleteBranch(branch: string): Promise<void>
+
+    updatePullRequest(number: number, state: "open" | "closed"): Promise<void>
 }

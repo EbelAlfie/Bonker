@@ -1,13 +1,13 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { LLM } from "../../domain/agent/LLM";
-import { GenerateRequest } from "./Generate";
+import { GenerateRequest, GenerateResponse } from "./Generate";
+import { LLM } from "../../domain/Ai/LLM";
 
 export type OllamaConfig = { 
     baseUrl: string,
     baseModel: string
 }
 
-class OllamaAgent implements LLM { 
+export class OllamaAgent implements LLM { 
     config: OllamaConfig
 
     constructor(config: OllamaConfig) { 
@@ -24,12 +24,15 @@ class OllamaAgent implements LLM {
         }
 
         const requestConfig: AxiosRequestConfig<GenerateRequest> = {
+            url: fullUrl,
             method: "post",
             data: requestBody
         }
-        const response = await axios.request(requestConfig) 
+        const response = await axios.request<GenerateResponse>(requestConfig) 
+        const data = response.data
 
-        return response.data
+        const result = data.response
+        return result
     }
     
 }

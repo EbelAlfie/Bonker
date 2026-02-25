@@ -1,19 +1,22 @@
-import { Runner } from "../app/app";
+import { AppConfig } from "../app/app";
 import { ChatBot } from "../domain/chat/ChatBot";
 import { Message } from "../domain/chat/Command";
 import { Workflow } from "../domain/Workflow";
 import { Workspace } from "../domain/file/Workspace";
 import { Git } from "../domain/vcs/Git";
+import { LLM } from "../domain/Ai/LLM";
 
 export class UnitTestWorkflow implements Workflow { 
     chatBot: ChatBot
     git: Git
     fileManager: Workspace
+    llm: LLM
 
-    constructor({chatBot, git, fileManager} : Runner) { 
+    constructor({chatBot, git, fileManager, llm} : AppConfig) { 
         this.chatBot = chatBot
         this.git = git
         this.fileManager = fileManager
+        this.llm = llm
     }
 
     execute() {
@@ -22,22 +25,40 @@ export class UnitTestWorkflow implements Workflow {
         ])
     }
 
-    async generateTest(message: Message) {
+    private async generateTest(message: Message) {
         const originalDir = this.fileManager.workingDir
+        const targetFilename = message.text
+        const devBranch = `dev-test-${Date.now()}`
+
+        if (!targetFilename || targetFilename === "")  {
+            await message.reply("Failed Create PR! No files to test")
+            return 
+        }
+
+        let workingBranch: string | undefined
         try { 
-            console.log("Start")
-            const devBranch = `dev-test-${Date.now()}`
             const workspaceDir = await this.git.clone(this.fileManager.workingDir)
+
             await this.git.checkout(devBranch)
 
             this.fileManager.updateWorkspace(workspaceDir)
 
-            const fileName = this.fileManager.createNewFile("Test.kt")
+            const fileContent = await this.fileManager.readFile(targetFilename)
+
+            const prompt = `
+                Just create a test file for this file. No other Words
+                ${fileContent}
+            `
+            const response = await this.llm.call(prompt)
+
+            const fileName = this.fileManager.createNewFile("Test.kt", response)
 
             await this.git.add(fileName)
             
-            await this.git.commit("test", fileName)
+            await this.git.commit("test", fileName) //Generate message from AI
+            
             await this.git.push(devBranch)
+            workingBranch = devBranch
 
             await this.git.pullRequest({
                 sourceBranch: devBranch,
@@ -47,6 +68,7 @@ export class UnitTestWorkflow implements Workflow {
             await message.reply("Success Create PR! Please review it")
         } catch(error) { 
             console.log(error)
+            workingBranch ? this.git.deleteBranch(workingBranch) : null
             await message.reply("Failed Create PR! " + error)
         } finally { 
             this.fileManager.cleanWorkspace()

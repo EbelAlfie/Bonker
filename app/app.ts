@@ -3,30 +3,28 @@ import { Workspace } from "../domain/file/Workspace";
 import { Git } from "../domain/vcs/Git";
 import { UnitTestWorkflow } from "../workflow/UnitTest";
 import { FileManager } from "../modules/file/FileManager";
+import { LLM } from "../domain/Ai/LLM";
 
-export type Runner = {
+export type AppConfig = {
     chatBot: ChatBot, 
     git: Git,
-    fileManager: Workspace
+    fileManager: Workspace,
+    llm: LLM
 }
 
 export class App { 
-    chatBot: ChatBot
-    git: Git
-    fileManager: FileManager
+    runner: AppConfig
 
     unitTest: UnitTestWorkflow
 
-    constructor(runner : Runner) { 
-        this.chatBot = runner.chatBot
-        this.git = runner.git
-        this.fileManager = runner.fileManager
-
+    constructor(runner : AppConfig) { 
+        this.runner = runner
         this.unitTest = new UnitTestWorkflow(runner)
     }
 
     start() { 
         this.unitTest.execute()
-        this.chatBot.start() 
+
+        this.runner.chatBot.start() 
     }
 }
