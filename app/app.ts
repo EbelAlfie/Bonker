@@ -1,7 +1,7 @@
 import { ChatBot } from "../domain/chat/ChatBot";
 import { Workspace } from "../domain/file/Workspace";
 import { Git } from "../domain/vcs/Git";
-import { UnitTest } from "../features/UnitTest";
+import { UnitTestWorkflow } from "../workflow/UnitTest";
 import { FileManager } from "../modules/file/FileManager";
 
 export type Runner = {
@@ -15,14 +15,14 @@ export class App {
     git: Git
     fileManager: FileManager
 
-    unitTest: UnitTest
+    unitTest: UnitTestWorkflow
 
     constructor(runner : Runner) { 
         this.chatBot = runner.chatBot
         this.git = runner.git
         this.fileManager = runner.fileManager
 
-        this.unitTest = new UnitTest(runner)
+        this.unitTest = new UnitTestWorkflow(runner)
     }
 
     start() { 

@@ -1,11 +1,11 @@
 import { Runner } from "../app/app";
 import { ChatBot } from "../domain/chat/ChatBot";
 import { Message } from "../domain/chat/Command";
-import { Feature } from "../domain/Feature";
+import { Workflow } from "../domain/Workflow";
 import { Workspace } from "../domain/file/Workspace";
 import { Git } from "../domain/vcs/Git";
 
-export class UnitTest implements Feature { 
+export class UnitTestWorkflow implements Workflow { 
     chatBot: ChatBot
     git: Git
     fileManager: Workspace
@@ -22,7 +22,7 @@ export class UnitTest implements Feature {
         ])
     }
 
-    async generateTest(message: Message) { 
+    async generateTest(message: Message) {
         const originalDir = this.fileManager.workingDir
         try { 
             console.log("Start")
