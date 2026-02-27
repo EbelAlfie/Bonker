@@ -4,13 +4,28 @@ import { Message } from "../domain/chat/Command";
 import { Workflow } from "../domain/Workflow";
 import { Workspace } from "../domain/file/Workspace";
 import { Git } from "../domain/vcs/Git";
-import { LLM } from "../domain/Ai/LLM";
+import { LLM } from "../domain/llm/LLM";
+import { PromptRequest } from "../domain/llm/PromptRequest";
 
 export class UnitTestWorkflow implements Workflow { 
     chatBot: ChatBot
     git: Git
     fileManager: Workspace
     llm: LLM
+
+    basePrompt: string = `
+    Generate high-quality Kotlin unit tests using JUnit5.
+    Follow these constraints:
+
+    - Do NOT test main().
+    - Test business logic only.
+    - Avoid asserting full console output strings.
+    - Prefer asserting return values.
+    - Do not hardcode arbitrary constants.
+    - Do not guess missing parameters.
+    - If information is missing, leave a TODO comment.
+    - Output only raw Kotlin code.
+    `
 
     constructor({chatBot, git, fileManager, llm} : AppConfig) { 
         this.chatBot = chatBot
@@ -45,10 +60,12 @@ export class UnitTestWorkflow implements Workflow {
 
             const fileContent = await this.fileManager.readFile(targetFilename)
 
-            const prompt = `
-                Just create a test file for this file. No other Words
-                ${fileContent}
-            `
+            const prompt: PromptRequest = {
+                prompt: `
+                    ${fileContent}
+                `,
+                systemMsg: "Kamu adalah senior software engineer. Generate unit test untuk kode yang diberikan sesuai bahasa pemrogramannya. Jangan jelaskan apapun, langsung tulis kodenya saja."
+            }
             const response = await this.llm.call(prompt)
 
             const fileName = this.fileManager.createNewFile("Test.kt", response)

@@ -3,7 +3,7 @@ import { Workspace } from "../domain/file/Workspace";
 import { Git } from "../domain/vcs/Git";
 import { UnitTestWorkflow } from "../workflow/UnitTest";
 import { FileManager } from "../modules/file/FileManager";
-import { LLM } from "../domain/Ai/LLM";
+import { LLM } from "../domain/llm/LLM";
 
 export type AppConfig = {
     chatBot: ChatBot, 

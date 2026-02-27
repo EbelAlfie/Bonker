@@ -1,6 +1,7 @@
 export type GenerateRequest = {
     model: string,
     prompt: string,   
+    system: string,
     stream: boolean
 }
 

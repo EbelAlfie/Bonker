@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { GenerateRequest, GenerateResponse } from "./Generate";
-import { LLM } from "../../domain/Ai/LLM";
+import { LLM } from "../../domain/llm/LLM";
+import { PromptRequest } from "../../domain/llm/PromptRequest";
 
 export type OllamaConfig = { 
     baseUrl: string,
@@ -14,12 +15,13 @@ export class OllamaAgent implements LLM {
         this.config = config
     }
 
-    async call(prompt: string): Promise<string> {
+    async call(request: PromptRequest): Promise<string> {
         const fullUrl = `${this.config.baseUrl}/api/generate`
 
         const requestBody: GenerateRequest = {
             model: this.config.baseModel,
-            prompt: prompt,
+            prompt: request.prompt,
+            system: request.systemMsg,
             stream: false
         }
 
