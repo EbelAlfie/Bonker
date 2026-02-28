@@ -1,4 +1,4 @@
-export type PromptRequest = {
+export type Prompt = {
     prompt: string,
     systemMsg: string
 }

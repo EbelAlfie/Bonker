@@ -5,8 +5,7 @@ import { Workflow } from "../domain/Workflow";
 import { Workspace } from "../domain/file/Workspace";
 import { Git } from "../domain/vcs/Git";
 import { LLM } from "../domain/llm/LLM";
-import { PromptRequest } from "../domain/llm/PromptRequest";
-import { FileSanitizer } from "../modules/ollama/FileSanitizer";
+import { Prompt } from "../domain/llm/Prompt";
 
 export class UnitTestWorkflow implements Workflow { 
     chatBot: ChatBot
@@ -49,7 +48,7 @@ export class UnitTestWorkflow implements Workflow {
 
             const fileContent = await this.fileManager.readFile(targetFilename)
 
-            const prompt: PromptRequest = {
+            const prompt: Prompt = {
                 prompt: `
                     ${fileContent}
                 `,

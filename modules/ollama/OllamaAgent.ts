@@ -1,11 +1,14 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { GenerateRequest, GenerateResponse } from "./Generate";
 import { LLM } from "../../domain/llm/LLM";
-import { PromptRequest } from "../../domain/llm/PromptRequest";
+import { Prompt } from "../../domain/llm/Prompt";
+import { EmbeddingRequest, EmbeddingResponse, mapToEmbeddings } from "./Embedding";
+import { Embedding } from "../../domain/llm/Embedding";
 
 export type OllamaConfig = { 
     baseUrl: string,
-    baseModel: string
+    baseModel: string,
+    embedModel: string
 }
 
 export class OllamaAgent implements LLM { 
@@ -15,7 +18,7 @@ export class OllamaAgent implements LLM {
         this.config = config
     }
 
-    async call(request: PromptRequest): Promise<string> {
+    async call(request: Prompt): Promise<string> {
         const fullUrl = `${this.config.baseUrl}/api/generate`
 
         const requestBody: GenerateRequest = {
@@ -36,5 +39,25 @@ export class OllamaAgent implements LLM {
         const result = data.response
         return result
     }
-    
+ 
+    async generateEmbeddings(input: any): Promise<Embedding> { 
+        const fullUrl = `${this.config.baseUrl}/api/embed`
+
+        const body: EmbeddingRequest = {
+            model: this.config.embedModel,
+            input: input
+        }
+
+        const requestConfig: AxiosRequestConfig<EmbeddingRequest> = {
+            url: fullUrl,
+            method: "post",
+            data: body
+        }
+
+        const response = await axios.request<EmbeddingResponse>(requestConfig)
+
+        const data = response.data
+
+        return mapToEmbeddings(data)
+    }
 }
