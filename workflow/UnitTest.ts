@@ -6,26 +6,13 @@ import { Workspace } from "../domain/file/Workspace";
 import { Git } from "../domain/vcs/Git";
 import { LLM } from "../domain/llm/LLM";
 import { PromptRequest } from "../domain/llm/PromptRequest";
+import { FileSanitizer } from "../modules/ollama/FileSanitizer";
 
 export class UnitTestWorkflow implements Workflow { 
     chatBot: ChatBot
     git: Git
     fileManager: Workspace
     llm: LLM
-
-    basePrompt: string = `
-    Generate high-quality Kotlin unit tests using JUnit5.
-    Follow these constraints:
-
-    - Do NOT test main().
-    - Test business logic only.
-    - Avoid asserting full console output strings.
-    - Prefer asserting return values.
-    - Do not hardcode arbitrary constants.
-    - Do not guess missing parameters.
-    - If information is missing, leave a TODO comment.
-    - Output only raw Kotlin code.
-    `
 
     constructor({chatBot, git, fileManager, llm} : AppConfig) { 
         this.chatBot = chatBot
@@ -52,6 +39,8 @@ export class UnitTestWorkflow implements Workflow {
 
         let workingBranch: string | undefined
         try { 
+            await message.reply("Creating unit test")
+
             const workspaceDir = await this.git.clone(this.fileManager.workingDir)
 
             await this.git.checkout(devBranch)
@@ -64,11 +53,23 @@ export class UnitTestWorkflow implements Workflow {
                 prompt: `
                     ${fileContent}
                 `,
-                systemMsg: "Kamu adalah senior software engineer. Generate unit test untuk kode yang diberikan sesuai bahasa pemrogramannya. Jangan jelaskan apapun, langsung tulis kodenya saja."
+                systemMsg: `
+                    Kamu adalah senior software engineer.
+                    Generate unit test untuk kode yang diberikan.
+
+                    Reply dalam format berikut PERSIS, tanpa teks lain:
+                    FILENAME: NamaFileTest.kt
+                    ---
+                    isi unit test disini
+                `
             }
             const response = await this.llm.call(prompt)
 
-            const fileName = this.fileManager.createNewFile("Test.kt", response)
+            const [header, ...rest] = response.split("---")
+            const filename = header.replace("FILENAME:", "").trim()
+            const content = rest.join("---").trim()
+
+            const fileName = this.fileManager.createNewFile(filename, content)
 
             await this.git.add(fileName)
             

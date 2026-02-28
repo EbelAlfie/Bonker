@@ -3,12 +3,14 @@
     "@octokit/app": "^16.1.2",
     "@octokit/rest": "^22.0.1",
     "axios": "^1.13.5",
+    "chromadb": "^3.3.1",
     "dotenv": "^17.3.1",
     "grammy": "^1.40.0",
     "octokit": "^5.0.5",
     "simple-git": "^3.32.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "web-tree-sitter": "^0.26.6"
   },
   "scripts": {
     "serve": "npx tsx main.ts",
@@ -16,6 +18,8 @@
     "llm": "npx tsx modules/ollama/index.ts"
   },
   "devDependencies": {
-    "@types/node": "^25.3.0"
+    "@types/node": "^25.3.0",
+    "tree-sitter-cli": "^0.26.6",
+    "tree-sitter-kotlin": "^0.3.8"
   }
 }
