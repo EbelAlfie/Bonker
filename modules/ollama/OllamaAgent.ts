@@ -4,6 +4,7 @@ import { LLM } from "../../domain/llm/LLM";
 import { Prompt } from "../../domain/llm/Prompt";
 import { EmbeddingRequest, EmbeddingResponse, mapToEmbeddings } from "./Embedding";
 import { Embedding } from "../../domain/llm/Embedding";
+import { CodeChunk } from "../../domain/RAG/Chunk";
 
 export type OllamaConfig = { 
     baseUrl: string,
@@ -40,12 +41,12 @@ export class OllamaAgent implements LLM {
         return result
     }
  
-    async generateEmbeddings(input: any): Promise<Embedding> { 
+    async generateEmbeddings(input: CodeChunk): Promise<Embedding> { 
         const fullUrl = `${this.config.baseUrl}/api/embed`
 
         const body: EmbeddingRequest = {
             model: this.config.embedModel,
-            input: input
+            input: input.codeText
         }
 
         const requestConfig: AxiosRequestConfig<EmbeddingRequest> = {
@@ -58,6 +59,6 @@ export class OllamaAgent implements LLM {
 
         const data = response.data
 
-        return mapToEmbeddings(data)
+        return mapToEmbeddings(input, data)
     }
 }

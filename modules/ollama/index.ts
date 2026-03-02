@@ -1,5 +1,6 @@
 import { Embedding } from "../../domain/llm/Embedding";
 import { Prompt } from "../../domain/llm/Prompt";
+import { CodeChunk } from "../../domain/RAG/Chunk";
 import { OllamaAgent, OllamaConfig } from "./OllamaAgent";
 
 const dummy = {
@@ -26,7 +27,7 @@ export async function call(prompt: Prompt = dummy): Promise<string> {
     return resp
 }
 
-export async function embed(input: any): Promise<Embedding> { 
+export async function embed(input: CodeChunk): Promise<Embedding> { 
     let ollama = new OllamaAgent(llmConfig)
     const resp = await ollama.generateEmbeddings(input)
 
@@ -36,4 +37,3 @@ export async function embed(input: any): Promise<Embedding> {
     return resp
 }
 
-call()

@@ -9,6 +9,8 @@ export interface Workspace {
 
     cleanWorkspace(): Promise<void>
 
+    getAllFiles(): (string | NonSharedBuffer)[]
+    
     writeExistingFile(): void
 
     deleteFile(): void

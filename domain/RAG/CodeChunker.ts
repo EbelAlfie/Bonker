@@ -1,5 +1,5 @@
-import { BaseSyntax, CodeChunk } from "./Chunk";
+import { CodeChunk } from "./Chunk";
 
-export interface CodeChunker<SyntaxType extends string = BaseSyntax> {
-    parse(content: string): Promise<CodeChunk<SyntaxType>[]>
+export interface CodeChunker {
+    parse(content: string): Promise<CodeChunk[]>
 }

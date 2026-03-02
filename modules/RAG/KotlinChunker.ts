@@ -1,10 +1,10 @@
 import { Language, Parser } from "web-tree-sitter";
 import { CodeChunker } from "../../domain/RAG/CodeChunker";
-import { BaseSyntax, CodeChunk } from "../../domain/RAG/Chunk";
+import { CodeChunk } from "../../domain/RAG/Chunk";
 
-type KotlinSyntax = BaseSyntax | "package" | "function" | "class"
+type KotlinSyntax = "text" | "package" | "function" | "class" | "import"
 
-export class KotlinChunker implements CodeChunker<KotlinSyntax> { 
+export class KotlinChunker implements CodeChunker { 
     parser: Parser | null = null
 
     async init() { 
@@ -14,7 +14,7 @@ export class KotlinChunker implements CodeChunker<KotlinSyntax> {
         this.parser.setLanguage(lang);
     }
 
-    async parse(content: string): Promise<CodeChunk<KotlinSyntax>[]> {
+    async parse(content: string): Promise<CodeChunk[]> {
         if (!this.parser) { await this.init() }
         const tree = this.parser?.parse(content);
         if (!tree) { 
@@ -24,20 +24,19 @@ export class KotlinChunker implements CodeChunker<KotlinSyntax> {
         const root = tree.rootNode
         
         const chunks = root.children.map(child => { 
-            const chunk: CodeChunk<KotlinSyntax> = {
+            const chunk: CodeChunk = {
                 type: this.getType(child.type),
-                data: child.text
+                codeText: child.text
             }
 
             return chunk
         })
 
-        console.log(chunks)
-
         return chunks
     }
 
     private getType(rawValue: string): KotlinSyntax { 
+        console.log(rawValue)
         switch (rawValue) { 
             case "function_declaration":
                 return "function"
@@ -45,8 +44,10 @@ export class KotlinChunker implements CodeChunker<KotlinSyntax> {
                 return "class"
             case "package_header":
                 return "package"
+            case "import_list":
+                return "import"
             default:
-                return "unknown"
+                return "text"
         }
     }
 }

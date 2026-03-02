@@ -19,14 +19,10 @@ export class FileManager implements Workspace {
     }
 
     async readFile(fileName: string): Promise<Buffer<ArrayBuffer> | undefined> { 
-        const fullPath = path.join(this.workingDir, fileName)
-
-        try { 
-            const file = fs.readFileSync(fullPath)
-            return file
-        } catch(error) { 
-            return undefined
-        }
+        const files = fs.readdirSync(this.workingDir, { recursive: true, encoding: 'utf-8' })
+        const target = files.find(f => f.includes(fileName))
+        const content = fs.readFileSync(path.join(this.workingDir, target!))
+        return content
     }
 
     createNewFile(fileName: string, content: string): string {
@@ -49,6 +45,13 @@ export class FileManager implements Workspace {
         } catch (err) {
             console.error("Cleanup failed:", err)
         }
+    }
+
+    getAllFiles(): (string | NonSharedBuffer)[] { 
+        const root = fs.readdirSync(this.workingDir, { recursive: true })
+        const files = root.filter((item) => { return item.includes(".kt") })
+        console.log(files)
+        return files
     }
 
     writeExistingFile(): void {

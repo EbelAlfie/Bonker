@@ -15,7 +15,9 @@
   "scripts": {
     "serve": "npx tsx main.ts",
     "chat": "npx tsx modules/chat/index.ts",
-    "llm": "npx tsx modules/ollama/index.ts"
+    "llm": "npx tsx modules/ollama/index.ts",
+    "indexwf": "npx tsx workflow/index.ts",
+    "rag": "npx tsx modules/RAG/index.ts"
   },
   "devDependencies": {
     "@types/node": "^25.3.0",

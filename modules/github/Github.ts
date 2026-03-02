@@ -111,4 +111,8 @@ export class Github implements Git { //retry mechanism?
             state: state
         })
     }
+
+    async webhookTrigger() {
+
+    }
 }

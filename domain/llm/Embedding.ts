@@ -1,3 +1,11 @@
+import { CodeChunk } from "../RAG/Chunk"
+
 export type Embedding = {
-    value: number[][]
+    value: number[][],
+    data: CodeChunk
+}
+export type EmbeddingQuery = {
+    distance?: number,
+    document?: string,
+    metadata?: Record<string, any>
 }

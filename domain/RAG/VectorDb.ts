@@ -1,7 +1,9 @@
-import { Embedding } from "../llm/Embedding"
+import { Embedding, EmbeddingQuery } from "../llm/Embedding"
 
 export interface VectorDb { 
-    init(): Promise<void>
+    init(collectionName: string): Promise<void>
 
-    save(embedding: Embedding): Promise<void>
+    insert(embedding: Embedding): Promise<void>
+
+    query(input: Embedding): Promise<EmbeddingQuery>
 }

@@ -6,18 +6,25 @@ import { Workspace } from "../domain/file/Workspace";
 import { Git } from "../domain/vcs/Git";
 import { LLM } from "../domain/llm/LLM";
 import { Prompt } from "../domain/llm/Prompt";
+import { VectorDb } from "../domain/RAG/VectorDb";
+import { CodeChunker } from "../domain/RAG/CodeChunker";
+import { getRepoName } from "../modules/github/Utils";
 
 export class UnitTestWorkflow implements Workflow { 
     chatBot: ChatBot
     git: Git
     fileManager: Workspace
     llm: LLM
+    vectorDb: VectorDb
+    codeChunker: CodeChunker
 
-    constructor({chatBot, git, fileManager, llm} : AppConfig) { 
+    constructor({chatBot, git, fileManager, llm, vectorDb, codeChunker} : AppConfig) { 
         this.chatBot = chatBot
         this.git = git
         this.fileManager = fileManager
         this.llm = llm
+        this.vectorDb = vectorDb
+        this.codeChunker = codeChunker
     }
 
     execute() {
@@ -47,6 +54,12 @@ export class UnitTestWorkflow implements Workflow {
             this.fileManager.updateWorkspace(workspaceDir)
 
             const fileContent = await this.fileManager.readFile(targetFilename)
+
+            if (!fileContent) throw new Error("Content unavailable")
+
+            this.getContext(fileContent)
+
+            return
 
             const prompt: Prompt = {
                 prompt: `
@@ -91,5 +104,22 @@ export class UnitTestWorkflow implements Workflow {
             this.fileManager.cleanWorkspace()
             this.fileManager.updateWorkspace(originalDir)
         }
+    }
+
+    async getContext(content: Buffer<ArrayBuffer>) { 
+        const THRESHOLD = 0.5
+
+        const collectionName = getRepoName() ?? ""
+        await this.vectorDb.init(collectionName)
+
+        const chunks = await this.codeChunker.parse(content.toString())
+        
+        const concate = chunks.map((chunk) => chunk.codeText)
+        const embedding = await this.llm.generateEmbeddings({
+            type: "text",
+            codeText: concate.join()
+        })
+
+        const context = (await this.vectorDb.query(embedding))
     }
 }
