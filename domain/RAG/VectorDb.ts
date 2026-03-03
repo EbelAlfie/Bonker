@@ -5,5 +5,5 @@ export interface VectorDb {
 
     insert(embedding: Embedding): Promise<void>
 
-    query(input: Embedding): Promise<EmbeddingQuery>
+    query(input: Embedding): Promise<EmbeddingQuery[]>
 }

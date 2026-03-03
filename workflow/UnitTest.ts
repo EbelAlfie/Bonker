@@ -9,6 +9,7 @@ import { Prompt } from "../domain/llm/Prompt";
 import { VectorDb } from "../domain/RAG/VectorDb";
 import { CodeChunker } from "../domain/RAG/CodeChunker";
 import { getRepoName } from "../modules/github/Utils";
+import { EmbeddingQuery } from "../domain/llm/Embedding";
 
 export class UnitTestWorkflow implements Workflow { 
     chatBot: ChatBot
@@ -53,17 +54,24 @@ export class UnitTestWorkflow implements Workflow {
 
             this.fileManager.updateWorkspace(workspaceDir)
 
-            const fileContent = await this.fileManager.readFile(targetFilename)
+            const filePath = this.fileManager.findFile(targetFilename)
+            if (!filePath) throw new Error("Content unavailable")
 
+            const fileContent = await this.fileManager.readFile(filePath)
             if (!fileContent) throw new Error("Content unavailable")
 
-            this.getContext(fileContent)
+            const context = await this.getContext(fileContent, filePath)
 
-            return
+            const files = context.map(embed => {
+                return `${embed.metadata?.filepath}${embed.document}`
+            }).join("\n\n")
 
             const prompt: Prompt = {
                 prompt: `
+                Target file:
                     ${fileContent}
+                other files:
+                    ${files}
                 `,
                 systemMsg: `
                     Kamu adalah senior software engineer.
@@ -75,6 +83,9 @@ export class UnitTestWorkflow implements Workflow {
                     isi unit test disini
                 `
             }
+
+            console.log(prompt)
+
             const response = await this.llm.call(prompt)
 
             const [header, ...rest] = response.split("---")
@@ -106,20 +117,28 @@ export class UnitTestWorkflow implements Workflow {
         }
     }
 
-    async getContext(content: Buffer<ArrayBuffer>) { 
+    async getContext(content: Buffer<ArrayBuffer>, filePath: string): Promise<EmbeddingQuery[]> { 
         const THRESHOLD = 0.5
 
         const collectionName = getRepoName() ?? ""
         await this.vectorDb.init(collectionName)
 
-        const chunks = await this.codeChunker.parse(content.toString())
+        const chunks = await this.codeChunker.parse(content.toString(), filePath)
         
-        const concate = chunks.map((chunk) => chunk.codeText)
+        const concate = chunks.map((chunk) => chunk.codeText).join()
         const embedding = await this.llm.generateEmbeddings({
             type: "text",
-            codeText: concate.join()
+            codeText: concate,
+            filepath: filePath
         })
 
         const context = (await this.vectorDb.query(embedding))
+            .filter(embed => embed.distance !== undefined && embed.distance < THRESHOLD)
+            .filter(embed => { 
+                if (embed.metadata?.filepath) { return embed.metadata.filepath !== filePath }
+                return true
+            })
+
+        return context
     }
 }

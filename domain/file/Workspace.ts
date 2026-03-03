@@ -5,7 +5,9 @@ export interface Workspace {
     
     createNewFile(fileName: string, content: string): string
 
-    readFile(fileName: string): Promise<Buffer<ArrayBuffer> | undefined>
+    findFile(fileName: string): string | undefined
+
+    readFile(filepath: string): Promise<Buffer<ArrayBuffer> | undefined>
 
     cleanWorkspace(): Promise<void>
 

@@ -53,7 +53,7 @@ export class IndexingWorkflow implements Workflow {
                 
                 if (!contentString || contentString === "") return
 
-                const chunks = await this.codeChunker.parse(contentString)
+                const chunks = await this.codeChunker.parse(contentString, path.toString())
                 return chunks
             })
         )).flat()

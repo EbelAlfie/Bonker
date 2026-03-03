@@ -18,10 +18,14 @@ export class FileManager implements Workspace {
         this.workingDir = newDir
     }
 
-    async readFile(fileName: string): Promise<Buffer<ArrayBuffer> | undefined> { 
+    findFile(fileName: string): string | undefined {
         const files = fs.readdirSync(this.workingDir, { recursive: true, encoding: 'utf-8' })
         const target = files.find(f => f.includes(fileName))
-        const content = fs.readFileSync(path.join(this.workingDir, target!))
+        return target
+    }
+
+    async readFile(filePath: string): Promise<Buffer<ArrayBuffer> | undefined> { 
+        const content = fs.readFileSync(path.join(this.workingDir, filePath!))
         return content
     }
 

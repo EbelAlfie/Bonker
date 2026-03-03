@@ -123,6 +123,7 @@ query()
 
 export async function deleteAll() { 
   const chromaDb = new Chroma()
-  await chromaDb.init()
-  await chromaDb.drop()
+  const name = getRepoName()
+  await chromaDb.init(name)
+  await chromaDb.drop(name)
 }

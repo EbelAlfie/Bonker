@@ -14,7 +14,7 @@ export class KotlinChunker implements CodeChunker {
         this.parser.setLanguage(lang);
     }
 
-    async parse(content: string): Promise<CodeChunk[]> {
+    async parse(content: string, filepath: string | null = null): Promise<CodeChunk[]> {
         if (!this.parser) { await this.init() }
         const tree = this.parser?.parse(content);
         if (!tree) { 
@@ -26,7 +26,8 @@ export class KotlinChunker implements CodeChunker {
         const chunks = root.children.map(child => { 
             const chunk: CodeChunk = {
                 type: this.getType(child.type),
-                codeText: child.text
+                codeText: child.text,
+                filepath: filepath
             }
 
             return chunk

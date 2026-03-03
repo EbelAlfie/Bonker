@@ -33,7 +33,7 @@ export class Chroma implements VectorDb {
         })
     }
 
-    async query(input: Embedding): Promise<EmbeddingQuery> { 
+    async query(input: Embedding): Promise<EmbeddingQuery[]> { 
         if (!this.codeCollection) { await this.init() }
 
         const result = await this.codeCollection?.query({
