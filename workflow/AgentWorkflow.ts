@@ -3,12 +3,12 @@ import { ChatBot } from "../domain/tools/chat/ChatBot";
 import { ChatMessage } from "../domain/tools/chat/Command";
 import { LLM } from "../domain/llm/LLM";
 import { Prompt } from "../domain/llm/Prompt";
-import { Decision, Message, ToolRequest } from "../domain/tools/agent/types";
+import { Decision, Message, ToolRequest } from "../domain/agent/types";
 import { Workflow } from "../domain/Workflow";
 import { parseDecision } from "../modules/ollama/Agent";
 import { FileSanitizer } from "../modules/ollama/FileSanitizer";
-import { Tool, ToolRegistry } from "../domain/tools/agent/tools";
 import { Workspace } from "../domain/tools/file/Workspace";
+import { ToolRegistry } from "../domain/agent/ToolRegistry";
 
 export class AgentWorkflow implements Workflow { 
     chatBot: ChatBot
@@ -39,12 +39,7 @@ export class AgentWorkflow implements Workflow {
 
         this.toolRegistry.registerTools(
             [
-                new Tool({
-                    name: "read_file",
-                    description: "Baca file",
-                    params: { "filePath": "string" },
-                    handler: async (params) => { return "" } 
-                })
+                
             ]
         )
     }

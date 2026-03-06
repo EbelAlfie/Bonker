@@ -1,4 +1,4 @@
-import { Decision } from "../../domain/tools/agent/types"
+import { Decision } from "../../domain/agent/types"
 
 export function parseDecision(response: string): Decision | null {
     try {
