@@ -1,6 +1,6 @@
-import { ChatBot } from "../domain/chat/ChatBot";
-import { Workspace } from "../domain/file/Workspace";
-import { Git } from "../domain/vcs/Git";
+import { ChatBot } from "../domain/tools/chat/ChatBot";
+import { Workspace } from "../domain/tools/file/Workspace";
+import { Git } from "../domain/tools/vcs/Git";
 import { UnitTestWorkflow } from "../workflow/UnitTest";
 import { FileManager } from "../modules/file/FileManager";
 import { LLM } from "../domain/llm/LLM";

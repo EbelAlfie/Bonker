@@ -1,7 +1,7 @@
 import { Bot, CommandContext, Context } from "grammy";
 import { TeleConfig } from "./Config";
-import { ChatBot } from "../../domain/chat/ChatBot";
-import { Command, Message } from "../../domain/chat/Command";
+import { ChatBot } from "../../domain/tools/chat/ChatBot";
+import { Command, ChatMessage } from "../../domain/tools/chat/Command";
 
 export class TelegramBot implements ChatBot { 
     bot: Bot
@@ -42,7 +42,7 @@ export class TelegramBot implements ChatBot {
 
         if (Array.isArray(item)) { item = item[0] }
 
-        const message: Message = {
+        const message: ChatMessage = {
             command: command.name,
             text: item,
             reply: async (message: string) => {

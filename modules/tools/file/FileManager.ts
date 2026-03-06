@@ -1,8 +1,8 @@
 import * as fs from "fs";
-import { Workspace } from "../../domain/file/Workspace";
 import path from "path";
 import { rm } from "fs/promises";
-import { FileSanitizer } from "../ollama/FileSanitizer";
+import { Workspace } from "../../../domain/tools/file/Workspace";
+import { FileSanitizer } from "../../ollama/FileSanitizer";
 
 export class FileManager implements Workspace {
     sanitizer: FileSanitizer

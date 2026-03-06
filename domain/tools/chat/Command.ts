@@ -4,7 +4,7 @@ export type Command = {
     handler: (...args: any[]) => void
 }
 
-export type Message = {
+export type ChatMessage = {
     command: string,
     text: string | undefined,
     reply: (message: string) => Promise<void>

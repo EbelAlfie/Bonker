@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { TelegramBot } from "./Telegram";
 import { TeleConfig } from "./Config";
-import { Config } from "../../config/config";
+import { Config } from '../../../config/config';
 
 function main() { 
     const config: TeleConfig = {

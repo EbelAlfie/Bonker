@@ -6,6 +6,7 @@ import { GitConfig, Github } from "../modules/github/Github"
 import { OllamaAgent, OllamaConfig } from "../modules/ollama/OllamaAgent"
 import { Chroma } from "../modules/RAG/Chroma"
 import { KotlinChunker } from "../modules/RAG/KotlinChunker"
+import { AgentWorkflow } from "./AgentWorkflow"
 import { IndexingWorkflow } from "./Indexing"
 
 const teleConfig: TeleConfig = {
@@ -25,9 +26,24 @@ const llmConfig: OllamaConfig = {
 }
 
 function run() { 
-    const indexing = new IndexingWorkflow(
+    // const indexing = new IndexingWorkflow(
+    //     {
+    //         chatBot: new TelegramBot(teleConfig),
+    //         git: new Github(gitConf),
+    //         fileManager: new FileManager(),
+    //         llm: new OllamaAgent(llmConfig),
+    //         codeChunker: new KotlinChunker(),
+    //         vectorDb: new Chroma()
+    //     }
+    // )
+
+    // indexing.execute()
+
+    let chatBot = new TelegramBot(teleConfig)
+
+    const agent = new AgentWorkflow(
         {
-            chatBot: new TelegramBot(teleConfig),
+            chatBot: chatBot,
             git: new Github(gitConf),
             fileManager: new FileManager(),
             llm: new OllamaAgent(llmConfig),
@@ -36,7 +52,9 @@ function run() {
         }
     )
 
-    indexing.execute()
+    agent.execute()
+
+    chatBot.start()
 }
 
 run()

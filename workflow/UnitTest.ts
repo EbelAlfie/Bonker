@@ -1,9 +1,9 @@
 import { AppConfig } from "../app/app";
-import { ChatBot } from "../domain/chat/ChatBot";
-import { Message } from "../domain/chat/Command";
+import { ChatBot } from "../domain/tools/chat/ChatBot";
+import { ChatMessage } from "../domain/tools/chat/Command";
 import { Workflow } from "../domain/Workflow";
-import { Workspace } from "../domain/file/Workspace";
-import { Git } from "../domain/vcs/Git";
+import { Workspace } from "../domain/tools/file/Workspace";
+import { Git } from "../domain/tools/vcs/Git";
 import { LLM } from "../domain/llm/LLM";
 import { Prompt } from "../domain/llm/Prompt";
 import { VectorDb } from "../domain/RAG/VectorDb";
@@ -34,7 +34,7 @@ export class UnitTestWorkflow implements Workflow {
         ])
     }
 
-    private async generateTest(message: Message) {
+    private async generateTest(message: ChatMessage) {
         const originalDir = this.fileManager.workingDir
         const targetFilename = message.text
         const devBranch = `dev-test-${Date.now()}`
