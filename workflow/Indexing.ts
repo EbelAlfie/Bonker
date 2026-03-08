@@ -1,24 +1,24 @@
 import path from "node:path";
 import { AppConfig } from "../app/app";
-import { ChatBot } from "../domain/chat/ChatBot";
 import { Workspace } from "../domain/file/Workspace";
 import { LLM } from "../domain/llm/LLM";
 import { Git } from "../domain/vcs/Git";
-import { Workflow } from "../domain/Workflow";
-import { CodeChunker } from "../domain/RAG/CodeChunker";
+import { CodeChunker } from "../domain/code/CodeChunker";
 import { VectorDb } from "../domain/RAG/VectorDb";
 import { getRepoName } from "../modules/github/Utils";
+import { Workflow } from "../domain/workflow/Workflow";
+import { Chat } from "../domain/chat/Chat";
 
 export class IndexingWorkflow implements Workflow {
-    chatBot: ChatBot
+    chat: Chat
     git: Git
     fileManager: Workspace
     llm: LLM
     codeChunker: CodeChunker
     vectorDb: VectorDb
 
-    constructor({chatBot, git, fileManager, llm, codeChunker, vectorDb} : AppConfig) { 
-        this.chatBot = chatBot
+    constructor({chat, git, fileManager, llm, codeChunker, vectorDb} : AppConfig) { 
+        this.chat = chat
         this.git = git
         this.fileManager = fileManager
         this.llm = llm

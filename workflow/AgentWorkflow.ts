@@ -1,17 +1,18 @@
 import { AppConfig } from "../app/app";
-import { ChatBot } from "../domain/tools/chat/ChatBot";
-import { ChatMessage } from "../domain/tools/chat/Command";
 import { LLM } from "../domain/llm/LLM";
 import { Prompt } from "../domain/llm/Prompt";
 import { Decision, Message, ToolRequest } from "../domain/agent/types";
-import { Workflow } from "../domain/Workflow";
 import { parseDecision } from "../modules/ollama/Agent";
-import { FileSanitizer } from "../modules/ollama/FileSanitizer";
-import { Workspace } from "../domain/tools/file/Workspace";
-import { ToolRegistry } from "../domain/agent/ToolRegistry";
+import { FileSanitizer } from "../modules/file/FileSanitizer";
+import { Workspace } from "../domain/file/Workspace";
+import { ToolRegistry } from "../agent/ToolRegistry";
+import { ReadFileTool } from "../agent/tools/ReadFileTool";
+import { ChatMessage } from "../domain/chat/Command";
+import { Chat } from "../domain/chat/Chat";
+import { Workflow } from "../domain/workflow/Workflow";
 
 export class AgentWorkflow implements Workflow { 
-    chatBot: ChatBot
+    chat: Chat
     llm: LLM
     fileManager: Workspace
     fileSanitizer: FileSanitizer = new FileSanitizer()
@@ -23,29 +24,30 @@ export class AgentWorkflow implements Workflow {
 
     Setiap responmu HARUS berupa JSON dengan format:
 
-    Kalau butuh tool:
+    Jangan tambahkan teks apapun di luar JSON.
+
+    Tool names are case-sensitive. Call tools exactly as listed.
+    Tool availabilities :
     {"tool": {"name": "nama_tool", "params": {...}}}
 
     Kalau sudah selesai:
     {"answer": "penjelasan ke user"}
-
-    Jangan tambahkan teks apapun di luar JSON.
     `
 
-    constructor({chatBot, llm, fileManager} : AppConfig) { 
-        this.chatBot = chatBot
+    constructor({chat, llm, fileManager} : AppConfig) { 
+        this.chat = chat
         this.llm = llm
         this.fileManager = fileManager
 
         this.toolRegistry.registerTools(
             [
-                
+                new ReadFileTool(fileManager)
             ]
         )
     }
 
     execute() { 
-        this.chatBot.registerCommand([
+        this.chat.registerCommand([
             {
                 name: "agent",
                 description: "run agent",
@@ -59,11 +61,9 @@ export class AgentWorkflow implements Workflow {
             role: "user",
             content: telegramMessage.text ?? ""
         }]
-
-        console.log(telegramMessage)
         
         while(true) { 
-            const llmDecision = await this.runCycle(context)
+            const llmDecision = await this.callLlm(context)
             if (llmDecision === null) {
                 telegramMessage.reply("Decision is null")
                 return 
@@ -79,7 +79,7 @@ export class AgentWorkflow implements Workflow {
 
                 const newContext: Message = {
                     role: "tool",
-                    content: llmDecision.tool.name
+                    content: result
                 }
                 context = [...context, newContext]
                 console.log(`Panggil ${llmDecision.tool?.name} ${llmDecision.tool?.params}`)
@@ -87,26 +87,30 @@ export class AgentWorkflow implements Workflow {
         }
     }
 
-    async runCycle(context: Message[]): Promise<Decision | null> { 
+    async callLlm(context: Message[]): Promise<Decision | null> { 
         const contextMessage = context.map(message => { 
             return `${message.role}: ${message.content}`
         })
 
         const prompt: Prompt = { 
             prompt: contextMessage.join("\n"),
-            systemMsg: this.systemMessage
+            systemMsg: `
+            ${this.systemMessage}
+            ${this.toolRegistry.getPrompt()}
+            `
         }
+        console.log(prompt)
 
         const response = await this.llm.call(prompt)
         const result = this.fileSanitizer.sanitizeCodeResponse(response) ?? response
         console.log(`response ${result}`)
         
         const decision = parseDecision(result)
-        console.log(decision)
+        console.log(`decision ${decision}`)
         return decision 
     }
 
-    async onToolRequest(toolRequest: ToolRequest) { 
+    async onToolRequest(toolRequest: ToolRequest) : Promise<string> { 
         const { name, params } = toolRequest
         const result = await this.toolRegistry.execute(name, params)
         return result

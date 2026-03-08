@@ -10,5 +10,5 @@ export type Decision = {
 
 export type ToolRequest = {
     name: string
-    params: string
+    params: Record<string, unknown>
 }

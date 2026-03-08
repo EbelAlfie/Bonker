@@ -3,8 +3,8 @@ import { GenerateRequest, GenerateResponse } from "./Generate";
 import { LLM } from "../../domain/llm/LLM";
 import { Prompt } from "../../domain/llm/Prompt";
 import { EmbeddingRequest, EmbeddingResponse, mapToEmbeddings } from "./Embedding";
-import { Embedding } from "../../domain/llm/Embedding";
-import { CodeChunk } from "../../domain/RAG/Chunk";
+import { Embedding } from "../../domain/RAG/Embedding";
+import { CodeChunk } from "../../domain/code/Chunk";
 
 export type OllamaConfig = { 
     baseUrl: string,
@@ -12,7 +12,7 @@ export type OllamaConfig = {
     embedModel: string
 }
 
-export class OllamaAgent implements LLM { 
+export class OllamaLlm implements LLM { 
     config: OllamaConfig
 
     constructor(config: OllamaConfig) { 

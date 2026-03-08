@@ -1,9 +1,9 @@
 import { Bot, CommandContext, Context } from "grammy";
 import { TeleConfig } from "./Config";
-import { ChatBot } from "../../domain/tools/chat/ChatBot";
-import { Command, ChatMessage } from "../../domain/tools/chat/Command";
+import { ChatMessage, Command } from "../../domain/chat/Command";
+import { Chat } from "../../domain/chat/Chat";
 
-export class TelegramBot implements ChatBot { 
+export class TelegramChat implements Chat { 
     bot: Bot
 
     commands: Command[] = []

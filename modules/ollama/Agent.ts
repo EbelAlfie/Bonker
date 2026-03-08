@@ -9,6 +9,7 @@ export function parseDecision(response: string): Decision | null {
         }
 
     } catch(error) { 
+        console.log(error)
         return null
     }
 }

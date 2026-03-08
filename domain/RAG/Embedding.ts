@@ -1,4 +1,4 @@
-import { CodeChunk } from "../RAG/Chunk"
+import { CodeChunk } from "../code/Chunk"
 
 export type Embedding = {
     value: number[][],

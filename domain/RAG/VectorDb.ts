@@ -1,4 +1,4 @@
-import { Embedding, EmbeddingQuery } from "../llm/Embedding"
+import { Embedding, EmbeddingQuery } from "./Embedding"
 
 export interface VectorDb { 
     init(collectionName: string): Promise<void>

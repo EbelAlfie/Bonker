@@ -1,14 +1,14 @@
-import { ChatBot } from "../domain/tools/chat/ChatBot";
-import { Workspace } from "../domain/tools/file/Workspace";
-import { Git } from "../domain/tools/vcs/Git";
-import { UnitTestWorkflow } from "../workflow/UnitTest";
+
 import { FileManager } from "../modules/file/FileManager";
 import { LLM } from "../domain/llm/LLM";
 import { VectorDb } from "../domain/RAG/VectorDb";
-import { CodeChunker } from "../domain/RAG/CodeChunker";
+import { CodeChunker } from "../domain/code/CodeChunker";
+import { Git } from "../domain/vcs/Git";
+import { Workspace } from "../domain/file/Workspace";
+import { Chat } from "../domain/chat/Chat";
 
 export type AppConfig = {
-    chatBot: ChatBot, 
+    chat: Chat, 
     git: Git,
     fileManager: Workspace,
     llm: LLM,
@@ -29,6 +29,6 @@ export class App {
     start() { 
         this.unitTest.execute()
 
-        this.runner.chatBot.start() 
+        this.runner.chat.start() 
     }
 }

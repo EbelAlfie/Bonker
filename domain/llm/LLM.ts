@@ -1,5 +1,5 @@
-import { CodeChunk } from "../RAG/Chunk";
-import { Embedding } from "./Embedding";
+import { CodeChunk } from "../code/Chunk";
+import { Embedding } from "../RAG/Embedding";
 import { Prompt } from "./Prompt";
 
 export interface LLM { 

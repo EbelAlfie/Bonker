@@ -1,9 +1,9 @@
 import { Config } from "../config/config"
 import { TeleConfig } from "../modules/chat/Config"
-import { TelegramBot } from "../modules/chat/Telegram"
+import { TelegramChat } from "../modules/chat/Telegram"
 import { FileManager } from "../modules/file/FileManager"
 import { GitConfig, Github } from "../modules/github/Github"
-import { OllamaAgent, OllamaConfig } from "../modules/ollama/OllamaAgent"
+import { OllamaConfig, OllamaLlm } from "../modules/ollama/OllamaLlm"
 import { Chroma } from "../modules/RAG/Chroma"
 import { KotlinChunker } from "../modules/RAG/KotlinChunker"
 import { AgentWorkflow } from "./AgentWorkflow"
@@ -39,14 +39,14 @@ function run() {
 
     // indexing.execute()
 
-    let chatBot = new TelegramBot(teleConfig)
+    let chat = new TelegramChat(teleConfig)
 
     const agent = new AgentWorkflow(
         {
-            chatBot: chatBot,
+            chat: chat,
             git: new Github(gitConf),
             fileManager: new FileManager(),
-            llm: new OllamaAgent(llmConfig),
+            llm: new OllamaLlm(llmConfig),
             codeChunker: new KotlinChunker(),
             vectorDb: new Chroma()
         }
@@ -54,7 +54,7 @@ function run() {
 
     agent.execute()
 
-    chatBot.start()
+    chat.start()
 }
 
 run()

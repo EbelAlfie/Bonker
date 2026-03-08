@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import path from "path";
 import { rm } from "fs/promises";
-import { Workspace } from "../../../domain/tools/file/Workspace";
-import { FileSanitizer } from "../../ollama/FileSanitizer";
+import { FileSanitizer } from "./FileSanitizer";
+import { Workspace } from "../../domain/file/Workspace";
 
 export class FileManager implements Workspace {
     sanitizer: FileSanitizer
@@ -25,20 +25,20 @@ export class FileManager implements Workspace {
     }
 
     async readFile(filePath: string): Promise<Buffer<ArrayBuffer> | undefined> { 
-        const content = fs.readFileSync(path.join(this.workingDir, filePath!))
+        const realPath = path.join(this.workingDir, filePath!)
+        const content = fs.readFileSync(realPath)
         return content
     }
 
     createNewFile(fileName: string, content: string): string {
-        const formattedContent = this.sanitizer.sanitizeCodeResponse(content)
 
-        if (!fs.existsSync(this.workingDir) || !formattedContent) {
+        if (!fs.existsSync(this.workingDir)) {
             console.log("No dir")
             throw new Error("No dir")
         }
 
         const realPath = path.join(this.workingDir, fileName)
-        fs.writeFileSync(realPath, formattedContent)
+        fs.writeFileSync(realPath, content)
         return realPath
     }
 

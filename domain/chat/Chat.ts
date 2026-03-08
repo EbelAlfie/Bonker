@@ -1,6 +1,6 @@
 import { Command } from "./Command"
 
-export interface ChatBot { 
+export interface Chat { 
     start(): void
 
     registerCommand(commands: Command[]): void

@@ -1,7 +1,7 @@
-import { Embedding } from "../../domain/llm/Embedding";
+import { Embedding } from "../../domain/RAG/Embedding";
 import { Prompt } from "../../domain/llm/Prompt";
-import { CodeChunk } from "../../domain/RAG/Chunk";
-import { OllamaAgent, OllamaConfig } from "./OllamaAgent";
+import { CodeChunk } from "../../domain/code/Chunk";
+import { OllamaLlm, OllamaConfig } from "./OllamaLlm";
 
 const dummy = {
     prompt: `Generate unit test Jest untuk fungsi berikut:
@@ -19,7 +19,7 @@ const llmConfig: OllamaConfig = {
 }
 
 export async function call(prompt: Prompt = dummy): Promise<string> {
-    let ollama = new OllamaAgent(llmConfig)
+    let ollama = new OllamaLlm(llmConfig)
     const resp = await ollama.call(prompt)
 
     console.log("resp")
@@ -28,7 +28,7 @@ export async function call(prompt: Prompt = dummy): Promise<string> {
 }
 
 export async function embed(input: CodeChunk): Promise<Embedding> { 
-    let ollama = new OllamaAgent(llmConfig)
+    let ollama = new OllamaLlm(llmConfig)
     const resp = await ollama.generateEmbeddings(input)
 
     console.log("embedResp")

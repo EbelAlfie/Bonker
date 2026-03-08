@@ -1,6 +1,6 @@
 import { Language, Parser } from "web-tree-sitter";
-import { CodeChunker } from "../../domain/RAG/CodeChunker";
-import { CodeChunk } from "../../domain/RAG/Chunk";
+import { CodeChunker } from "../../domain/code/CodeChunker";
+import { CodeChunk } from "../../domain/code/Chunk";
 
 type KotlinSyntax = "text" | "package" | "function" | "class" | "import"
 

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { Embedding, EmbeddingQuery } from "../../domain/llm/Embedding";
+import { Embedding, EmbeddingQuery } from "../../domain/RAG/Embedding";
 import { VectorDb } from "../../domain/RAG/VectorDb";
 import { ChromaClient, Collection } from 'chromadb'
 
