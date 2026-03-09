@@ -1,8 +1,8 @@
-import { CodeChunk } from "../../domain/RAG/Chunk"
+import { CodeChunk } from "../../domain/code/Chunk"
+import { KotlinChunker } from "../code/KotlinChunker"
 import { getRepoName } from "../github/Utils"
 import { embed } from "../ollama"
 import { Chroma } from "./Chroma"
-import { KotlinChunker } from "./KotlinChunker"
 
 const dummy = `
 package cinema
@@ -86,7 +86,7 @@ fun main() {
 }
 `
 
-export async function main(input: string = dummy): Promise<CodeChunk[]> { 
+async function main(input: string = dummy): Promise<CodeChunk[]> { 
     const chunker = new KotlinChunker()
     await chunker.init()
     const chunks = await chunker.parse(input)
@@ -105,7 +105,7 @@ export async function main(input: string = dummy): Promise<CodeChunk[]> {
     return chunks
 }
 
-export async function query(input: string = "ViewModel that handle gas station") { 
+async function query(input: string = "ViewModel that handle gas station") { 
     const chunker = new KotlinChunker()
     await chunker.init()
     const chunks = await chunker.parse(input)
@@ -121,7 +121,7 @@ export async function query(input: string = "ViewModel that handle gas station")
 
 query()
 
-export async function deleteAll() { 
+async function deleteAll() { 
   const chromaDb = new Chroma()
   const name = getRepoName()
   await chromaDb.init(name)

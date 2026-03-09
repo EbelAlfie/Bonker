@@ -5,7 +5,7 @@ import { FileManager } from "../modules/file/FileManager"
 import { GitConfig, Github } from "../modules/github/Github"
 import { OllamaConfig, OllamaLlm } from "../modules/ollama/OllamaLlm"
 import { Chroma } from "../modules/RAG/Chroma"
-import { KotlinChunker } from "../modules/RAG/KotlinChunker"
+import { KotlinChunker } from "../modules/code/KotlinChunker"
 import { AgentWorkflow } from "./AgentWorkflow"
 import { IndexingWorkflow } from "./Indexing"
 
@@ -25,20 +25,7 @@ const llmConfig: OllamaConfig = {
     embedModel: "nomic-embed-text"
 }
 
-function run() { 
-    // const indexing = new IndexingWorkflow(
-    //     {
-    //         chatBot: new TelegramBot(teleConfig),
-    //         git: new Github(gitConf),
-    //         fileManager: new FileManager(),
-    //         llm: new OllamaAgent(llmConfig),
-    //         codeChunker: new KotlinChunker(),
-    //         vectorDb: new Chroma()
-    //     }
-    // )
-
-    // indexing.execute()
-
+function run() {
     let chat = new TelegramChat(teleConfig)
 
     const agent = new AgentWorkflow(

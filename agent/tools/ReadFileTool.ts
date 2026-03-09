@@ -6,7 +6,7 @@ export class ReadFileTool extends Tool<{ path: string }> {
     
     description: string = "Read and get file"
     
-    params: Record<string, string> = { "path" : "string" }
+    paramDeclaration: Record<string, string> = { "path" : "string" }
 
     fileManager: Workspace
 
@@ -16,8 +16,13 @@ export class ReadFileTool extends Tool<{ path: string }> {
     }
 
     parseParams(anyParam: Record<string, unknown>): { path: string } | undefined {
+        const path = anyParam?.path
+
+        if (typeof path !== "string" || path.trim() === "")
+            return undefined
+
         return {
-            path: anyParam?.path as string ?? ""
+            path: path
         }
     }
 

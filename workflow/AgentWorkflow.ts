@@ -10,6 +10,8 @@ import { ReadFileTool } from "../agent/tools/ReadFileTool";
 import { ChatMessage } from "../domain/chat/Command";
 import { Chat } from "../domain/chat/Chat";
 import { Workflow } from "../domain/workflow/Workflow";
+import { PromptProvider } from "../agent/PromptProvider";
+import { CurrentTimeTool } from "../agent/tools/CurrentTimeTool";
 
 export class AgentWorkflow implements Workflow { 
     chat: Chat
@@ -17,22 +19,9 @@ export class AgentWorkflow implements Workflow {
     fileManager: Workspace
     fileSanitizer: FileSanitizer = new FileSanitizer()
 
+    promptProvider: PromptProvider = new PromptProvider()
+
     toolRegistry: ToolRegistry = new ToolRegistry()
-
-    systemMessage: string = `
-    Kamu adalah coding agent. Tugasmu mengerjakan hal yang berhubungan dengan kode.
-
-    Setiap responmu HARUS berupa JSON dengan format:
-
-    Jangan tambahkan teks apapun di luar JSON.
-
-    Tool names are case-sensitive. Call tools exactly as listed.
-    Tool availabilities :
-    {"tool": {"name": "nama_tool", "params": {...}}}
-
-    Kalau sudah selesai:
-    {"answer": "penjelasan ke user"}
-    `
 
     constructor({chat, llm, fileManager} : AppConfig) { 
         this.chat = chat
@@ -41,7 +30,8 @@ export class AgentWorkflow implements Workflow {
 
         this.toolRegistry.registerTools(
             [
-                new ReadFileTool(fileManager)
+                new ReadFileTool(fileManager),
+                new CurrentTimeTool()
             ]
         )
     }
@@ -94,10 +84,9 @@ export class AgentWorkflow implements Workflow {
 
         const prompt: Prompt = { 
             prompt: contextMessage.join("\n"),
-            systemMsg: `
-            ${this.systemMessage}
-            ${this.toolRegistry.getPrompt()}
-            `
+            systemMsg: this.promptProvider.buildSystemPrompt({ 
+                toolsPrompt: this.toolRegistry.getPrompt()
+            })
         }
         console.log(prompt)
 

@@ -1,12 +1,12 @@
 import { App } from "./app/app"
 import { Config } from "./config/config"
 import { TeleConfig } from "./modules/chat/Config"
-import { TelegramBot } from "./modules/chat/Telegram"
+import { TelegramChat } from "./modules/chat/Telegram"
+import { KotlinChunker } from "./modules/code/KotlinChunker"
 import { FileManager } from "./modules/file/FileManager"
 import { GitConfig, Github } from "./modules/github/Github"
-import { OllamaAgent, OllamaConfig } from "./modules/ollama/OllamaAgent"
+import { OllamaConfig, OllamaLlm } from "./modules/ollama/OllamaLlm"
 import { Chroma } from "./modules/RAG/Chroma"
-import { KotlinChunker } from "./modules/RAG/KotlinChunker"
 
 const teleConfig: TeleConfig = {
     token: Config.TELEGRAM_TOKEN
@@ -25,10 +25,10 @@ const llmConfig: OllamaConfig = {
 }
 
 let app = new App({
-    chatBot: new TelegramBot(teleConfig),
+    chat: new TelegramChat(teleConfig),
     git: new Github(gitConf),
     fileManager: new FileManager(),
-    llm: new OllamaAgent(llmConfig),
+    llm: new OllamaLlm(llmConfig),
     codeChunker: new KotlinChunker(),
     vectorDb: new Chroma()
 })

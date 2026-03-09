@@ -1,11 +1,11 @@
 
-import { FileManager } from "../modules/file/FileManager";
 import { LLM } from "../domain/llm/LLM";
 import { VectorDb } from "../domain/RAG/VectorDb";
 import { CodeChunker } from "../domain/code/CodeChunker";
 import { Git } from "../domain/vcs/Git";
 import { Workspace } from "../domain/file/Workspace";
 import { Chat } from "../domain/chat/Chat";
+import { AgentWorkflow } from "../workflow/AgentWorkflow";
 
 export type AppConfig = {
     chat: Chat, 
@@ -19,15 +19,15 @@ export type AppConfig = {
 export class App { 
     runner: AppConfig
 
-    unitTest: UnitTestWorkflow
+    agent: AgentWorkflow
 
     constructor(runner : AppConfig) { 
         this.runner = runner
-        this.unitTest = new UnitTestWorkflow(runner)
+        this.agent = new AgentWorkflow(runner)
     }
 
     start() { 
-        this.unitTest.execute()
+        this.agent.execute()
 
         this.runner.chat.start() 
     }

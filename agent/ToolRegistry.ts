@@ -29,8 +29,6 @@ export class ToolRegistry {
     getPrompt(): string {
         const allTool = this.tools.map(tool => tool.asPrompt()).join("\n\n")
         return `
-            Tools yang tersedia:
-
             ${allTool}
         `
     }
