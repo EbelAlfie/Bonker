@@ -1,5 +1,5 @@
 import { App } from "./app/app"
-import { Config } from "./config/config"
+import { Config } from "./app/config"
 import { TeleConfig } from "./modules/chat/Config"
 import { TelegramChat } from "./modules/chat/Telegram"
 import { KotlinChunker } from "./modules/code/KotlinChunker"

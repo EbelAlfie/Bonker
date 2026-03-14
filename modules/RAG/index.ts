@@ -119,7 +119,7 @@ async function query(input: string = "ViewModel that handle gas station") {
     const result = await chromaDb.query(embedding)
 }
 
-query()
+deleteAll()
 
 async function deleteAll() { 
   const chromaDb = new Chroma()

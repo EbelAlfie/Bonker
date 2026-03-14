@@ -1,17 +1,14 @@
 import * as fs from "fs";
-import path from "path";
 import { rm } from "fs/promises";
-import { FileSanitizer } from "./FileSanitizer";
 import { Workspace } from "../../domain/file/Workspace";
+import path from "path";
 
 export class FileManager implements Workspace {
-    sanitizer: FileSanitizer
 
     workingDir: string = path.join(__dirname, "tmp")
 
     constructor(workingDir: string = this.workingDir) { 
         this.workingDir = workingDir
-        this.sanitizer = new FileSanitizer()
     }
 
     updateWorkspace(newDir: string): void { 

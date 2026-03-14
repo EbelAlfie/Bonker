@@ -1,4 +1,4 @@
-import { Config } from "../../config/config"
+import { Config } from "../../app/config"
 
 export function getRepoName(repoUrl: string = Config.REPO_URL) { 
     const pathname = new URL(repoUrl).pathname

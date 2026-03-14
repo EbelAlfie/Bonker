@@ -51,6 +51,8 @@ export class Chroma implements VectorDb {
         console.log("RESULT")
         console.log(result)
 
+        if (queryModel.length <= 0) throw new Error("Empty memory")
+
         return queryModel
     }
 

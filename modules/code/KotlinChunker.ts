@@ -1,11 +1,11 @@
-import { Language, Parser } from "web-tree-sitter";
+import { Language, Node, Parser } from "web-tree-sitter";
 import { CodeChunker } from "../../domain/code/CodeChunker";
 import { CodeChunk } from "../../domain/code/Chunk";
 
 type KotlinSyntax = "text" | "package" | "function" | "class" | "import"
 
 export class KotlinChunker implements CodeChunker { 
-    parser: Parser | null = null
+    private parser: Parser | null = null
 
     async init() { 
         await Parser.init()
@@ -17,21 +17,88 @@ export class KotlinChunker implements CodeChunker {
     async parse(content: string, filepath: string | null = null): Promise<CodeChunk[]> {
         if (!this.parser) { await this.init() }
         const tree = this.parser?.parse(content);
-        if (!tree) { 
-            return []
-        }
+        if (!tree) return []
 
-        const root = tree.rootNode
-        
-        const chunks = root.children.map(child => { 
-            const chunk: CodeChunk = {
-                type: this.getType(child.type),
-                codeText: child.text,
-                filepath: filepath
+        return this.parseNode(tree.rootNode, content, filepath, null)
+    }
+
+    private parseNode(
+        node: Node, 
+        content: string, 
+        filepath: string | null,
+        parentContext: string | null
+    ): CodeChunk[] {
+        let chunks: CodeChunk[] = []
+
+        for (const child of node.children) {
+            if (child.type === "class_declaration") {
+                chunks = [...chunks, ...this.parseClass(child, content, filepath, parentContext)]
+                continue
             }
 
-            return chunk
-        })
+            chunks.push({
+                type: this.getType(child.type),
+                codeText: parentContext ? `// Context: ${parentContext}\n\n${child.text}` : child.text,
+                filepath
+            })
+        }
+
+        return chunks
+    }
+
+    private parseClass(
+        classNode: Node,
+        content: string,
+        filepath: string | null,
+        parentContext: string | null
+    ): CodeChunk[] {
+        const chunks: CodeChunk[] = []
+        const classBody = classNode.children.find(c => c.type === "class_body")
+
+        // Build class header (everything before the body)
+        const classHeader = classBody
+            ? content.slice(classNode.startIndex, classBody.startIndex).trim()
+            : classNode.text
+
+        const fullContext = parentContext 
+            ? `${parentContext}\n${classHeader}` 
+            : classHeader
+
+        if (!classBody) {
+            chunks.push({ type: "class", codeText: classHeader, filepath })
+            return chunks
+        }
+
+        // Kumpulin properties dulu
+        const properties = classBody.children
+            .filter(m => m.type === "property_declaration")
+            .map(m => m.text)
+
+        const contextWithProps = properties.length > 0
+            ? `${fullContext}\n\n// Properties:\n${properties.join("\n")}`
+            : fullContext
+
+        // Push class header + properties sebagai 1 chunk
+        chunks.push({ type: "class", codeText: contextWithProps, filepath })
+
+        // Proses semua members
+        for (const member of classBody.children) {
+            if (member.type === "function_declaration") {
+                chunks.push({
+                    type: "function",
+                    codeText: `// Context: ${contextWithProps}\n\n${member.text}`,
+                    filepath
+                })
+                continue
+            }
+
+            if (member.type === "class_declaration") {
+                // Rekursif! Nested class bawa context parent
+                const nestedChunks = this.parseClass(member, content, filepath, contextWithProps)
+                chunks.push(...nestedChunks)
+                continue
+            }
+        }
 
         return chunks
     }

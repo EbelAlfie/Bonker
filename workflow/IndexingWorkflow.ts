@@ -33,12 +33,12 @@ export class IndexingWorkflow implements Workflow {
     async indexCode() { 
         const defaultDir = this.fileManager.workingDir
         try { 
-            const newDir = await this.git.clone(this.fileManager.workingDir)
-            this.fileManager.updateWorkspace(newDir)
+            // const newDir = await this.git.clone(this.fileManager.workingDir)
+            this.fileManager.updateWorkspace(defaultDir)
         
             await this.generateEmbeds()
 
-        } catch(error) {
+        } catch(error) { //TODO: handle index error?
             console.log(error)
         } finally { 
             this.fileManager.updateWorkspace(defaultDir)
@@ -61,12 +61,12 @@ export class IndexingWorkflow implements Workflow {
         const collectionName = getRepoName() ?? ""
         await this.vectorDb.init(collectionName)
 
-        chunks.forEach(async chunk =>{
-            if (!chunk) return 
+        for (const chunk of chunks) { 
+            if (!chunk) continue
             console.log(chunk)
             const embedding = await this.llm.generateEmbeddings(chunk)
             
-            this.vectorDb.insert(embedding)
-        })
+            await this.vectorDb.insert(embedding)
+        }
     }
 }

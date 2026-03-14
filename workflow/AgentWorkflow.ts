@@ -2,8 +2,7 @@ import { AppConfig } from "../app/app";
 import { LLM } from "../domain/llm/LLM";
 import { Prompt } from "../domain/llm/Prompt";
 import { Decision, Message, ToolRequest } from "../domain/agent/types";
-import { parseDecision } from "../modules/ollama/Agent";
-import { FileSanitizer } from "../modules/file/FileSanitizer";
+import { parseDecision, sanitizeCodeResponse } from "../utils/Utils";
 import { Workspace } from "../domain/file/Workspace";
 import { ToolRegistry } from "../agent/ToolRegistry";
 import { ReadFileTool } from "../agent/tools/ReadFileTool";
@@ -12,26 +11,33 @@ import { Chat } from "../domain/chat/Chat";
 import { Workflow } from "../domain/workflow/Workflow";
 import { PromptProvider } from "../agent/PromptProvider";
 import { CurrentTimeTool } from "../agent/tools/CurrentTimeTool";
+import { SearchCodeTool } from "../agent/tools/SearchCodeTool";
+import { VectorDb } from "../domain/RAG/VectorDb";
 
 export class AgentWorkflow implements Workflow { 
     chat: Chat
     llm: LLM
     fileManager: Workspace
-    fileSanitizer: FileSanitizer = new FileSanitizer()
+    vectorDb: VectorDb
 
     promptProvider: PromptProvider = new PromptProvider()
 
     toolRegistry: ToolRegistry = new ToolRegistry()
 
-    constructor({chat, llm, fileManager} : AppConfig) { 
+    constructor({chat, llm, fileManager, vectorDb} : AppConfig) { 
         this.chat = chat
         this.llm = llm
         this.fileManager = fileManager
+        this.vectorDb = vectorDb
 
         this.toolRegistry.registerTools(
             [
                 new ReadFileTool(fileManager),
-                new CurrentTimeTool()
+                new CurrentTimeTool(),
+                new SearchCodeTool({
+                    llm: llm,
+                    vectorDb: vectorDb
+                })
             ]
         )
     }
@@ -53,18 +59,28 @@ export class AgentWorkflow implements Workflow {
         }]
         
         while(true) { 
-            const llmDecision = await this.callLlm(context)
+            let llmDecision: Decision | null
+
+            try { 
+                llmDecision = await this.callLlm(context)
+            } catch(error) { 
+                console.log(error)
+                continue
+            }
+
             if (llmDecision === null) {
                 telegramMessage.reply("Decision is null")
                 return 
             }
 
             if (llmDecision.answer) { 
+                console.log(`Answer ${llmDecision.answer}`)
                 telegramMessage.reply(llmDecision.answer)
                 return
             }
 
             if (llmDecision.tool) { 
+                console.log(`Call tool ${llmDecision.tool?.name} ${llmDecision.tool?.params}`)
                 const result = await this.onToolRequest(llmDecision.tool)
 
                 const newContext: Message = {
@@ -72,7 +88,6 @@ export class AgentWorkflow implements Workflow {
                     content: result
                 }
                 context = [...context, newContext]
-                console.log(`Panggil ${llmDecision.tool?.name} ${llmDecision.tool?.params}`)
             }
         }
     }
@@ -88,14 +103,14 @@ export class AgentWorkflow implements Workflow {
                 toolsPrompt: this.toolRegistry.getPrompt()
             })
         }
-        console.log(prompt)
+
+        console.log(`Prompt: ${prompt}`)
 
         const response = await this.llm.call(prompt)
-        const result = this.fileSanitizer.sanitizeCodeResponse(response) ?? response
+        const result = sanitizeCodeResponse(response) ?? response
         console.log(`response ${result}`)
         
         const decision = parseDecision(result)
-        console.log(`decision ${decision}`)
         return decision 
     }
 

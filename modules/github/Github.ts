@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import { Git } from "../../domain/vcs/Git";
-import { Config } from "../../config/config";
+import { Config } from "../../app/config";
 import simpleGit, { SimpleGit } from "simple-git";
 import path from "node:path";
 import { getRepoName } from "./Utils";
