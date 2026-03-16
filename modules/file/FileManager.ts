@@ -2,10 +2,11 @@ import * as fs from "fs";
 import { rm } from "fs/promises";
 import { Workspace } from "../../domain/file/Workspace";
 import path from "path";
+import { Config } from "../../app/config";
 
 export class FileManager implements Workspace {
 
-    workingDir: string = path.join(__dirname, "tmp")
+    workingDir: string = Config.WORKSPACE
 
     constructor(workingDir: string = this.workingDir) { 
         this.workingDir = workingDir
@@ -48,8 +49,9 @@ export class FileManager implements Workspace {
         }
     }
 
-    getAllFiles(): (string | NonSharedBuffer)[] { 
-        const root = fs.readdirSync(this.workingDir, { recursive: true })
+    getAllFiles(subPath?: string): (string | NonSharedBuffer)[] { 
+        const targetPath = subPath ? path.join(this.workingDir, subPath) : this.workingDir
+        const root = fs.readdirSync(targetPath, { recursive: true })
         const files = root.filter((item) => { return item.includes(".kt") })
         console.log(files)
         return files

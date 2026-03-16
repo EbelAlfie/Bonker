@@ -11,7 +11,7 @@ export interface Workspace {
 
     cleanWorkspace(): Promise<void>
 
-    getAllFiles(): (string | NonSharedBuffer)[]
+    getAllFiles(subPath?: string): (string | NonSharedBuffer)[]
     
     writeExistingFile(): void
 
