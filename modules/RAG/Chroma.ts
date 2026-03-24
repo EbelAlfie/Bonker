@@ -13,7 +13,7 @@ export class Chroma implements VectorDb {
         this.client = new ChromaClient()
     }
 
-    async init(collectionName: string = this.defaultName): Promise<void> { 
+    async init(collectionName: string = this.defaultName): Promise<void> {
         this.codeCollection = await this.client.getOrCreateCollection(
             { 
                 name: collectionName === "" ? this.defaultName : collectionName,

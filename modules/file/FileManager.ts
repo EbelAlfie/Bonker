@@ -16,16 +16,30 @@ export class FileManager implements Workspace {
         this.workingDir = newDir
     }
 
+    getSubdirectories(subPath?: string): string[] {
+        const targetPath = subPath ? path.join(this.workingDir, subPath) : this.workingDir
+        const root = fs.readdirSync(targetPath, { recursive: true, withFileTypes: true })
+        const files = root.filter((item) => { return item.isDirectory() })
+        return files.map(item => { return item.name })
+    }
+
+    getAllFiles(targetPath: string): string[] { 
+        const root = fs.readdirSync(targetPath, { recursive: true })
+        const files = root.filter((item) => { return item.includes(".kt") })
+        console.log(files)
+        return files.map(item => path.join(targetPath, item.toString()))
+    }
+
     findFile(fileName: string): string | undefined {
         const files = fs.readdirSync(this.workingDir, { recursive: true, encoding: 'utf-8' })
         const target = files.find(f => f.includes(fileName))
         return target
     }
 
-    async readFile(filePath: string): Promise<Buffer<ArrayBuffer> | undefined> { 
-        const realPath = path.join(this.workingDir, filePath!)
+    async readFile(filePath: string): Promise<string> { 
+        const realPath = filePath
         const content = fs.readFileSync(realPath)
-        return content
+        return content.toString()
     }
 
     createNewFile(fileName: string, content: string): string {
@@ -47,14 +61,6 @@ export class FileManager implements Workspace {
         } catch (err) {
             console.error("Cleanup failed:", err)
         }
-    }
-
-    getAllFiles(subPath?: string): (string | NonSharedBuffer)[] { 
-        const targetPath = subPath ? path.join(this.workingDir, subPath) : this.workingDir
-        const root = fs.readdirSync(targetPath, { recursive: true })
-        const files = root.filter((item) => { return item.includes(".kt") })
-        console.log(files)
-        return files
     }
 
     writeExistingFile(): void {

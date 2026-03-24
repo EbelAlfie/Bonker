@@ -6,4 +6,6 @@ export interface VectorDb {
     insert(embedding: Embedding): Promise<void>
 
     query(input: Embedding): Promise<EmbeddingQuery[]>
+
+    drop(collectionName: string): Promise<void>
 }
