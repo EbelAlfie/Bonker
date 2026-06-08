@@ -18,7 +18,7 @@ export class FileManager implements Workspace {
 
     getSubdirectories(subPath?: string): string[] {
         const targetPath = subPath ? path.join(this.workingDir, subPath) : this.workingDir
-        const root = fs.readdirSync(targetPath, { recursive: true, withFileTypes: true })
+        const root = fs.readdirSync(targetPath, { recursive: false, withFileTypes: true })
         const files = root.filter((item) => { return item.isDirectory() })
         return files.map(item => { return item.name })
     }
@@ -26,7 +26,6 @@ export class FileManager implements Workspace {
     getAllFiles(targetPath: string): string[] { 
         const root = fs.readdirSync(targetPath, { recursive: true })
         const files = root.filter((item) => { return item.includes(".kt") })
-        console.log(files)
         return files.map(item => path.join(targetPath, item.toString()))
     }
 

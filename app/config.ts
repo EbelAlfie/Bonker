@@ -23,6 +23,6 @@ export const gitConf: GitConfig = {
 
 export const llmConfig: OllamaConfig = {
     baseUrl: "http://localhost:11434",
-    baseModel: "qwen2.5-coder:7b",
+    baseModel: "qwen3-coder:latest",
     embedModel: "nomic-embed-text"
 }

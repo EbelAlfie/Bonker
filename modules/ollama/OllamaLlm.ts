@@ -26,7 +26,10 @@ export class OllamaLlm implements LLM {
             model: this.config.baseModel,
             prompt: request.prompt,
             system: request.systemMsg,
-            stream: false
+            stream: false,
+            options: {
+                temperature: 0
+            }
         }
 
         const requestConfig: AxiosRequestConfig<GenerateRequest> = {
@@ -46,7 +49,7 @@ export class OllamaLlm implements LLM {
 
         const body: EmbeddingRequest = {
             model: this.config.embedModel,
-            input: input.codeText
+            input: input.codeText,
         }
 
         const requestConfig: AxiosRequestConfig<EmbeddingRequest> = {

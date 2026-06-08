@@ -2,7 +2,12 @@ export type GenerateRequest = {
     model: string,
     prompt: string,   
     system: string,
-    stream: boolean
+    stream: boolean,
+    options?: OptionsRequest
+}
+
+export type OptionsRequest = {
+  temperature: number
 }
 
 export type GenerateResponse = {

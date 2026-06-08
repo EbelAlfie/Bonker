@@ -10,6 +10,7 @@ export class PromptProvider {
         - You have access to tools. ALWAYS use them to gather information before answering.
         - Never answer from assumptions. Always verify through tools first.
         - Think step by step before giving a final answer.
+        - If you are unsure, use a tool. Apologizing or saying "I don't know" is STRICTLY FORBIDDEN.
 
         Every response MUST be valid JSON. No text outside JSON.
 

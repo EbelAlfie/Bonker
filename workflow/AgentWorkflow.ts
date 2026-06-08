@@ -69,19 +69,20 @@ export class AgentWorkflow implements Workflow {
             }
 
             if (llmDecision === null) {
-                telegramMessage.reply("Decision is null")
+                telegramMessage.reply("❌ Decision is null")
                 return 
             }
 
             if (llmDecision.answer) { 
                 console.log(`Answer ${llmDecision.answer}`)
-                telegramMessage.reply(llmDecision.answer)
+                telegramMessage.reply(`💁🏻‍♀️ ${llmDecision.answer}`)
                 return
             }
 
             if (llmDecision.tool) { 
                 console.log(`Call tool ${llmDecision.tool?.name} ${llmDecision.tool?.params}`)
                 const result = await this.onToolRequest(llmDecision.tool)
+                telegramMessage.reply(`⚙️ executing tool ${llmDecision.tool?.name}`)
 
                 const newContext: Message = {
                     role: "tool",
@@ -104,7 +105,7 @@ export class AgentWorkflow implements Workflow {
             })
         }
 
-        console.log(`Prompt: ${prompt}`)
+        // console.log(`PROMPT: ${contextMessage.join("\n")}`)
 
         const response = await this.llm.call(prompt)
         const result = sanitizeCodeResponse(response) ?? response

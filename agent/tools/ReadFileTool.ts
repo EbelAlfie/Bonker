@@ -28,6 +28,6 @@ export class ReadFileTool extends Tool<{ path: string }> {
 
     async run(params: { path: string }): Promise<string> { 
         const fileContent = await this.fileManager.readFile(params.path)
-        return fileContent?.toString("utf-8") ?? "File tidak ditemukan"
+        return fileContent?.toString() ?? "File tidak ditemukan"
     }
 }
