@@ -24,7 +24,7 @@ export class AgentWorkflow implements Workflow {
 
     toolRegistry: ToolRegistry = new ToolRegistry()
 
-    constructor({chat, llm, fileManager, vectorDb} : AppConfig) { 
+    constructor({chat, llm, fileManager, vectorDb} : AppConfig) {
         this.chat = chat
         this.llm = llm
         this.fileManager = fileManager
@@ -62,16 +62,16 @@ export class AgentWorkflow implements Workflow {
         while(true) { 
             let llmDecision: Decision | null
 
-            try { 
+            try {
                 llmDecision = await this.callLlm(context)
-            } catch(error) { 
+            } catch(error) {
                 console.log(error)
                 continue
             }
 
             if (llmDecision === null) {
                 telegramMessage.reply("❌ Decision is null")
-                return 
+                return
             }
 
             if (llmDecision.answer) { 
@@ -94,14 +94,14 @@ export class AgentWorkflow implements Workflow {
         }
     }
 
-    async callLlm(context: Message[]): Promise<Decision | null> { 
-        const contextMessage = context.map(message => { 
+    async callLlm(context: Message[]): Promise<Decision | null> {
+        const contextMessage = context.map(message => {
             return `${message.role}: ${message.content}`
         })
 
         const prompt: Prompt = { 
             prompt: contextMessage.join("\n"),
-            systemMsg: this.promptProvider.buildSystemPrompt({ 
+            systemMsg: this.promptProvider.buildSystemPrompt({
                 toolsPrompt: this.toolRegistry.getDefinition()
             })
         }
@@ -116,7 +116,7 @@ export class AgentWorkflow implements Workflow {
         return decision 
     }
 
-    async onToolRequest(toolRequest: ToolRequest) : Promise<string> { 
+    async onToolRequest(toolRequest: ToolRequest) : Promise<string> {
         const { name, params } = toolRequest
         const result = await this.toolRegistry.execute(name, params)
         return result

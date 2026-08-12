@@ -9,7 +9,7 @@ import { AgentWorkflow } from "../workflow/AgentWorkflow";
 import { IndexingWorkflow } from "../workflow/IndexingWorkflow";
 
 export type AppConfig = {
-    chat: Chat, 
+    chat: Chat,
     git: Git,
     fileManager: Workspace,
     llm: LLM,
@@ -33,6 +33,6 @@ export class App {
         // this.indexing.execute()
         this.agent.execute()
 
-        this.runner.chat.start() 
+        this.runner.chat.start()
     }
 }
