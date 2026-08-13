@@ -1,5 +1,5 @@
 import { Embedding } from "../../domain/RAG/Embedding"
-import { CodeChunk } from "../../domain/code/Chunk"
+import { CodeChunk } from "../../domain/RAG/Chunk"
 
 export type EmbeddingRequest = {
   model: string

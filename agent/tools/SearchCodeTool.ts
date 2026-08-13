@@ -1,4 +1,4 @@
-import { Tool } from "../../domain/agent/tools";
+import { Tool } from "../../domain/tools/agent/tools";
 import { LLM } from "../../domain/llm/LLM";
 import { VectorDb } from "../../domain/RAG/VectorDb";
 

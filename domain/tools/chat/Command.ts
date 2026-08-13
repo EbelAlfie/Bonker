@@ -5,7 +5,7 @@ export type Command = {
 }
 
 export type ChatMessage = {
-    command: string,
+    command?: string,
     text: string | undefined,
     reply: (message: string) => Promise<void>
 }

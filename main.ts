@@ -1,10 +1,10 @@
 import { App } from "./app/app"
 import { Config } from "./app/config"
-import { TeleConfig } from "./modules/chat/Config"
-import { TelegramChat } from "./modules/chat/Telegram"
+import { TeleConfig } from "./modules/tools/chat/Config"
+import { TelegramBot } from "./modules/tools/chat/Telegram"
 import { KotlinChunker } from "./modules/code/KotlinChunker"
-import { FileManager } from "./modules/file/FileManager"
-import { GitConfig, Github } from "./modules/github/Github"
+import { FileManager } from "./modules/tools/file/FileManager"
+import { GitConfig, Github } from "./modules/github"
 import { OllamaConfig, OllamaLlm } from "./modules/ollama/OllamaLlm"
 import { Chroma } from "./modules/RAG/Chroma"
 
@@ -25,7 +25,7 @@ const llmConfig: OllamaConfig = {
 }
 
 let app = new App({
-    chat: new TelegramChat(teleConfig),
+    chat: new TelegramBot(teleConfig),
     git: new Github(gitConf),
     fileManager: new FileManager(),
     llm: new OllamaLlm(llmConfig),

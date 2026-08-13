@@ -1,6 +1,6 @@
 import { Embedding } from "../../domain/RAG/Embedding";
 import { Prompt } from "../../domain/llm/Prompt";
-import { CodeChunk } from "../../domain/code/Chunk";
+import { CodeChunk } from "../../domain/RAG/Chunk";
 import { OllamaLlm, OllamaConfig } from "./OllamaLlm";
 
 const dummy = {

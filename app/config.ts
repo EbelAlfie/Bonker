@@ -1,6 +1,6 @@
 import "dotenv/config"
-import { TeleConfig } from "../modules/chat/Config"
-import { GitConfig } from "../modules/github/Github"
+import { TeleConfig } from "../modules/tools/chat/Config"
+import { GitConfig } from "../modules/github"
 import { OllamaConfig } from "../modules/ollama/OllamaLlm"
 import path from "node:path"
 

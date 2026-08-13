@@ -1,5 +1,5 @@
-import { Tool } from "../../domain/agent/tools";
-import { Workspace } from "../../domain/file/Workspace";
+import { Tool } from "../../domain/tools/agent/tools";
+import { Workspace } from "../../domain/tools/file/Workspace";
 
 export class ReadFileTool extends Tool<{ path: string }> {
     name: string = "read_file"

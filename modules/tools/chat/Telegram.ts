@@ -1,12 +1,14 @@
 import { Bot, CommandContext, Context } from "grammy";
 import { TeleConfig } from "./Config";
-import { ChatBot } from "../../domain/tools/chat/ChatBot";
-import { Command, ChatMessage } from "../../domain/tools/chat/Command";
+import { ChatBot, MessageCallback } from "../../../domain/tools/chat/ChatBot";
+import { Command, ChatMessage } from "../../../domain/tools/chat/Command";
 
 export class TelegramBot implements ChatBot { 
     bot: Bot
 
     commands: Command[] = []
+
+    onMessage: MessageCallback | undefined 
 
     constructor(config: TeleConfig) { 
         this.bot = new Bot(config.token)
@@ -28,7 +30,18 @@ export class TelegramBot implements ChatBot {
             this.bot.command(value.name, async ctx => this.runCommand(ctx, value))
         })
 
-        this.bot.on("message:text", this.onMessage.bind(this))
+        this.bot.on("message:text", (ctx: Context) => { 
+            let msg = ctx.message
+            const message: ChatMessage = {
+                command: undefined,
+                text: msg?.text,
+                reply: async (message: string) => {
+                    await ctx.reply(message)
+                }
+            }
+
+            if (this.onMessage) this.onMessage(message)
+        })
 
         this.bot.start()
     }
@@ -56,8 +69,7 @@ export class TelegramBot implements ChatBot {
         ctx.reply("on start")
     }
 
-    private async onMessage(ctx: Context) { 
-        const message = ctx.message
-        ctx.reply("on message")
+    onNewMessage(callback: MessageCallback): void { 
+        this.onMessage = callback
     }
 }

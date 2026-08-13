@@ -1,15 +1,15 @@
 import { AppConfig } from "../app/app";
-import { Workspace } from "../domain/file/Workspace";
+import { Workspace } from "../domain/tools/file/Workspace";
 import { LLM } from "../domain/llm/LLM";
-import { Git } from "../domain/vcs/Git";
-import { CodeChunker } from "../domain/code/CodeChunker";
+import { Git } from "../domain/tools/vcs/Git";
+import { CodeChunker } from "../domain/RAG/CodeChunker";
 import { VectorDb } from "../domain/RAG/VectorDb";
-import { Workflow } from "../domain/workflow/Workflow";
-import { Chat } from "../domain/chat/Chat";
+import { Workflow } from "../domain/Workflow";
+import { ChatBot } from "../domain/tools/chat/ChatBot";
 import path from "node:path";
 
 export class IndexingWorkflow implements Workflow {
-    chat: Chat
+    chat: ChatBot
     git: Git
     fileManager: Workspace
     llm: LLM

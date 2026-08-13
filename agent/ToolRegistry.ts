@@ -1,4 +1,4 @@
-import { Tool } from "../domain/agent/tools"
+import { Tool } from "../domain/tools/agent/tools"
 
 export class ToolRegistry { 
     private tools: Tool<any>[] = []

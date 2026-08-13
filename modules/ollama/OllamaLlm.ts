@@ -4,7 +4,7 @@ import { LLM } from "../../domain/llm/LLM";
 import { Prompt } from "../../domain/llm/Prompt";
 import { EmbeddingRequest, EmbeddingResponse, mapToEmbeddings } from "./Embedding";
 import { Embedding } from "../../domain/RAG/Embedding";
-import { CodeChunk } from "../../domain/code/Chunk";
+import { CodeChunk } from "../../domain/RAG/Chunk";
 
 export type OllamaConfig = { 
     baseUrl: string,

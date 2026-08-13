@@ -1,6 +1,6 @@
-import { CodeChunk } from "../../domain/code/Chunk"
+import { CodeChunk } from "../../domain/RAG/Chunk"
 import { KotlinChunker } from "../code/KotlinChunker"
-import { getRepoName } from "../github/Utils"
+import { getRepoName } from "../../utils/Utils"
 import { embed } from "../ollama"
 import { Chroma } from "./Chroma"
 

@@ -1,5 +1,5 @@
 import { llmConfig } from "../../app/config"
-import { FileManager } from "../file/FileManager"
+import { FileManager } from "../tools/file/FileManager"
 import { OllamaLlm } from "../ollama/OllamaLlm"
 import { KotlinChunker } from "./KotlinChunker"
 

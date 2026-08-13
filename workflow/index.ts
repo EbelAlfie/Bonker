@@ -1,14 +1,14 @@
 import { gitConf, llmConfig, teleConfig } from "../app/config"
-import { TelegramChat } from "../modules/chat/Telegram"
-import { FileManager } from "../modules/file/FileManager"
-import { Github } from "../modules/github/Github"
+import { TelegramBot } from "../modules/tools/chat/Telegram"
+import { FileManager } from "../modules/tools/file/FileManager"
+import { Github } from "../modules/github"
 import { OllamaLlm } from "../modules/ollama/OllamaLlm"
 import { Chroma } from "../modules/RAG/Chroma"
 import { KotlinChunker } from "../modules/code/KotlinChunker"
 import { AgentWorkflow } from "./AgentWorkflow"
 
 function run() {
-    let chat = new TelegramChat(teleConfig)
+    let chat = new TelegramBot(teleConfig)
 
     const agent = new AgentWorkflow(
         {

@@ -1,4 +1,4 @@
-import { Decision } from "../domain/agent/types"
+import { Decision } from "../domain/tools/agent/types"
 
 export function parseDecision(response: string): Decision | null {
     try {
@@ -25,4 +25,19 @@ export function sanitizeJson(raw: string): string {
     const closes = (raw.match(/}/g) ?? []).length
     const missing = opens - closes
     return raw + "}".repeat(missing)
+}
+
+export function getRepoName(): string | null {
+    // Get repository name from environment or git config
+    try {
+        const repoUrl = process.env.TARGET_REPO ?? ""
+        if (repoUrl) {
+            const parts = repoUrl.split("/")
+            const repoName = parts[parts.length - 1]?.replace(".git", "")
+            return repoName || null
+        }
+        return null
+    } catch {
+        return null
+    }
 }

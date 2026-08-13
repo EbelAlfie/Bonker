@@ -1,13 +1,13 @@
 import { AppConfig } from "../app/app";
 import { LLM } from "../domain/llm/LLM";
 import { Prompt } from "../domain/llm/Prompt";
-import { Decision, Message, ToolRequest } from "../domain/agent/types";
+import { Decision, Message, ToolRequest } from "../domain/tools/agent/types";
 import { parseDecision, sanitizeCodeResponse } from "../utils/Utils";
-import { Workspace } from "../domain/file/Workspace";
+import { Workspace } from "../domain/tools/file/Workspace";
 import { ToolRegistry } from "../agent/ToolRegistry";
 import { ReadFileTool } from "../agent/tools/ReadFileTool";
-import { ChatMessage } from "../domain/chat/Command";
-import { Chat } from "../domain/chat/Chat";
+import { ChatMessage } from "../domain/tools/chat/Command";
+import { ChatBot } from "../domain/tools/chat/ChatBot";
 import { Workflow } from "../domain/workflow/Workflow";
 import { PromptProvider } from "../agent/PromptProvider";
 import { CurrentTimeTool } from "../agent/tools/CurrentTimeTool";
@@ -15,7 +15,7 @@ import { SearchCodeTool } from "../agent/tools/SearchCodeTool";
 import { VectorDb } from "../domain/RAG/VectorDb";
 
 export class AgentWorkflow implements Workflow { 
-    chat: Chat
+    chat: ChatBot
     llm: LLM
     fileManager: Workspace
     vectorDb: VectorDb
@@ -43,7 +43,7 @@ export class AgentWorkflow implements Workflow {
     }
 
     execute() { 
-        console.log("Executing agent workflow")
+        console.log("💨 Executing agent workflow")
         this.chat.registerCommand([
             {
                 name: "agent",
@@ -51,6 +51,8 @@ export class AgentWorkflow implements Workflow {
                 handler: this.runAgent.bind(this)
             }
         ])
+
+        this.chat.onNewMessage(this.runAgent.bind(this))
     }
 
     async runAgent(telegramMessage: ChatMessage) {
@@ -81,9 +83,13 @@ export class AgentWorkflow implements Workflow {
             }
 
             if (llmDecision.tool) { 
-                console.log(`Call tool ${llmDecision.tool?.name} ${llmDecision.tool?.params}`)
+                console.log(`Call tool ${llmDecision.tool?.name} ${JSON.stringify(llmDecision.tool?.params)}`)
                 const result = await this.onToolRequest(llmDecision.tool)
-                telegramMessage.reply(`⚙️ executing tool ${llmDecision.tool?.name}`)
+                telegramMessage.reply(`
+                    ⚙️ executing tool ${llmDecision.tool?.name}
+                    Request: ${JSON.stringify(llmDecision.tool?.params)}
+                    result: ${result}
+                `)
 
                 const newContext: Message = {
                     role: "tool",

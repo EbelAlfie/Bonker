@@ -1,13 +1,13 @@
 import path from "node:path";
 import { AppConfig } from "../app/app";
-import { ChatBot } from "../domain/chat/ChatBot";
-import { Workspace } from "../domain/file/Workspace";
+import { ChatBot } from "../domain/tools/chat/ChatBot";
+import { Workspace } from "../domain/tools/file/Workspace";
 import { LLM } from "../domain/llm/LLM";
-import { Git } from "../domain/vcs/Git";
+import { Git } from "../domain/tools/vcs/Git";
 import { Workflow } from "../domain/Workflow";
 import { CodeChunker } from "../domain/RAG/CodeChunker";
 import { VectorDb } from "../domain/RAG/VectorDb";
-import { getRepoName } from "../modules/github/Utils";
+import { getRepoName } from "../utils/Utils";
 
 export class IndexingWorkflow implements Workflow {
     chatBot: ChatBot
