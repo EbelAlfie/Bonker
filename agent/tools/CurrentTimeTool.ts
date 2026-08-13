@@ -1,9 +1,9 @@
-import { Tool } from "../../domain/tools/agent/tools";
+import { Tool, ToolParameter } from "../../domain/tools/agent/tools";
 
 export class CurrentTimeTool extends Tool<void> {
     name: string = "get_current_time";
     description: string = "Get the current time";
-    parameters: Record<string, string> = {} ;
+    parameters = {} ;
 
     parseParams(anyParam: Record<string, unknown>): void {
         return 

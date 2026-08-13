@@ -1,14 +1,27 @@
-import { Tool } from "../../domain/tools/agent/tools";
+import { Tool, ToolParameter } from "../../domain/tools/agent/tools";
 import { LLM } from "../../domain/llm/LLM";
 import { VectorDb } from "../../domain/RAG/VectorDb";
 
-export class SearchCodeTool extends Tool<{ query: string }> {
+type SearchCodeProp = { 
+    query: string
+}
+
+export class SearchCodeTool extends Tool<SearchCodeProp> {
     vectorDb: VectorDb
     llm: LLM
 
     name: string = "search_code";
     description: string = "search code";
-    parameters: Record<string, string> = { "query": "string" };
+    parameters: ToolParameter = {
+        type: "object",
+        properties: {
+            path: {
+                type: "string",
+                description: "bebas lah apapun ini hehe"
+            }
+        },
+        required: ["query"]
+    }
 
     constructor(
         {
@@ -25,7 +38,7 @@ export class SearchCodeTool extends Tool<{ query: string }> {
         this.llm = llm
     }
 
-    parseParams(anyParam: Record<string, unknown>): { query: string; } | undefined {
+    parseParams(anyParam: Record<string, unknown>): SearchCodeProp | undefined {
         const query = anyParam.query 
         if (typeof query === "string") { 
             return {
@@ -35,7 +48,7 @@ export class SearchCodeTool extends Tool<{ query: string }> {
         return undefined
     }
 
-    async run(params: { query: string; }): Promise<string> {
+    async run(params: SearchCodeProp): Promise<string> {
         const embedding = await this.llm.generateEmbeddings({
             type: "text",
             codeText: params.query,

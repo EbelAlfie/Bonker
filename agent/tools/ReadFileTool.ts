@@ -1,12 +1,25 @@
-import { Tool } from "../../domain/tools/agent/tools";
+import { Tool, ToolParameter } from "../../domain/tools/agent/tools";
 import { Workspace } from "../../domain/tools/file/Workspace";
 
-export class ReadFileTool extends Tool<{ path: string }> {
+type ReadFileProp = { 
+    path: string
+}
+
+export class ReadFileTool extends Tool<ReadFileProp> {
     name: string = "read_file"
     
     description: string = "Read and get file"
     
-    parameters: Record<string, string> = { "path" : "string" }
+    parameters: ToolParameter = {
+        type: "object",
+        properties: {
+            path: {
+                type: "string",
+                description: "bebas lah apapun ini hehe"
+            }
+        },
+        required: ["query"]
+    }
 
     fileManager: Workspace
 
@@ -15,7 +28,7 @@ export class ReadFileTool extends Tool<{ path: string }> {
         this.fileManager = fileManager
     }
 
-    parseParams(anyParam: Record<string, unknown>): { path: string } | undefined {
+    parseParams(anyParam: Record<string, unknown>): ReadFileProp | undefined {
         const path = anyParam?.path
 
         if (typeof path !== "string" || path.trim() === "")
@@ -26,7 +39,7 @@ export class ReadFileTool extends Tool<{ path: string }> {
         }
     }
 
-    async run(params: { path: string }): Promise<string> { 
+    async run(params: ReadFileProp): Promise<string> { 
         const fileContent = await this.fileManager.readFile(params.path)
         return fileContent?.toString() ?? "File tidak ditemukan"
     }
