@@ -2,17 +2,24 @@ import { Tool, ToolParameter } from "../../domain/tools/agent/tools";
 import { LLM } from "../../domain/llm/LLM";
 import { VectorDb } from "../../domain/RAG/VectorDb";
 
-type SearchCodeProp = { 
-    query: string
+type SearchCodeParam = { 
+    path: string
 }
 
-export class SearchCodeTool extends Tool<SearchCodeProp> {
+type SearchCodeProp = {
+    path: {
+        type: "string",
+        description: "bebas lah apapun ini hehe"
+    }
+}
+
+export class SearchCodeTool extends Tool<SearchCodeParam, SearchCodeProp> {
     vectorDb: VectorDb
     llm: LLM
 
     name: string = "search_code";
     description: string = "search code";
-    parameters: ToolParameter = {
+    parameters: ToolParameter<SearchCodeProp> = {
         type: "object",
         properties: {
             path: {
@@ -38,20 +45,20 @@ export class SearchCodeTool extends Tool<SearchCodeProp> {
         this.llm = llm
     }
 
-    parseParams(anyParam: Record<string, unknown>): SearchCodeProp | undefined {
-        const query = anyParam.query 
-        if (typeof query === "string") { 
+    parseParams(anyParam: Record<string, unknown>): SearchCodeParam | undefined {
+        const path = anyParam.path 
+        if (typeof path === "string") { 
             return {
-                query: query as string ?? ""
+                path: path as string ?? ""
             }
         }
         return undefined
     }
 
-    async run(params: SearchCodeProp): Promise<string> {
+    async run(params: SearchCodeParam): Promise<string> {
         const embedding = await this.llm.generateEmbeddings({
             type: "text",
-            codeText: params.query,
+            codeText: params.path,
             filepath: ""
         })
 

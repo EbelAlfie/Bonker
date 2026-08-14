@@ -1,8 +1,19 @@
-export abstract class Tool<param> {
+export type ToolProperties = {
+    type: string, 
+    description: string
+}
+
+export interface ToolParameter<property extends Record<string, ToolProperties>> { 
+    type: string
+    properties: property
+    required: string[]
+}
+
+export abstract class Tool<param, properties extends Record<string, ToolProperties>> {
     //tool schema
     abstract readonly name: string
     abstract readonly description: string
-    abstract readonly parameters: ToolParameter | {}
+    abstract readonly parameters: ToolParameter<properties> | {}
 
     abstract parseParams(anyParam: Record<string, unknown>): param | undefined
 
@@ -26,30 +37,10 @@ export abstract class Tool<param> {
     }
 
     asDefinition() {
-        const properties: Record<string, ToolProperties> = {}
-        for (const [key, {type, description}] of Object.entries(this.parameters)) {
-            properties[key] = { type, description }
-        }
-
         return {
             name: this.name,
             description: this.description,
-            parameters: {
-                type: "object" as const,
-                properties,
-                required: Object.keys(this.parameters)
-            }
+            parameters: this.parameters
         }
     }
-}
-
-export type ToolProperties = {
-    type: string, 
-    description: string
-}
-
-export interface ToolParameter { 
-    type: "object"
-    properties: Record<string, ToolProperties>
-    required: string[]
 }

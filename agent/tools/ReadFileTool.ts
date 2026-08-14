@@ -5,12 +5,19 @@ type ReadFileProp = {
     path: string
 }
 
-export class ReadFileTool extends Tool<ReadFileProp> {
+type ReadFileParam = {
+    path: { 
+        type: string,
+        description: string
+    }
+}
+
+export class ReadFileTool extends Tool<ReadFileProp, ReadFileParam> {
     name: string = "read_file"
     
     description: string = "Read and get file"
     
-    parameters: ToolParameter = {
+    parameters: ToolParameter<ReadFileParam> = {
         type: "object",
         properties: {
             path: {
@@ -18,7 +25,7 @@ export class ReadFileTool extends Tool<ReadFileProp> {
                 description: "bebas lah apapun ini hehe"
             }
         },
-        required: ["query"]
+        required: ["path"]
     }
 
     fileManager: Workspace

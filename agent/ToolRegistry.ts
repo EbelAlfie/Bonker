@@ -1,9 +1,9 @@
 import { Tool } from "../domain/tools/agent/tools"
 
 export class ToolRegistry { 
-    private tools: Tool<any>[] = []
+    private tools: Tool<any, any>[] = []
 
-    registerTools(newTools: Tool<any>[]) { 
+    registerTools(newTools: Tool<any, any>[]) { 
         this.tools = newTools
     }
 
