@@ -1,10 +1,10 @@
 import { Tool } from "../domain/tools/agent/tools"
-
 export class ToolRegistry { 
     private tools: Tool<any, any>[] = []
 
     registerTools(newTools: Tool<any, any>[]) { 
         this.tools = newTools
+        this.addToSetting(this.tools)
     }
 
     validateTool(name: string) { 
@@ -26,10 +26,25 @@ export class ToolRegistry {
         }
     }
 
-    getDefinition(): string {
-        const allTool = this.tools.map(tool => tool.asPrompt()).join("\n\n")
-        return `
-            ${allTool}
+    getDefinition(): Object[] {
+        const allTool = this.tools.map(tool => {
+            return {type: "function", function: tool.asPrompt()}
+        })
+
+        return allTool
+    }
+
+    addToSetting(tools: Tool<any, any>[]) { 
+        let toolSettings = tools.map(element => {
+            return `"${element.name}" : { 
+                enabled: ${element.enabled}
+            }`
+        });
+
+        let json = `
+            tools: {
+                ${toolSettings}
+            }
         `
     }
-}
+ }

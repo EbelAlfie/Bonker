@@ -13,11 +13,18 @@ export abstract class Tool<param, properties extends Record<string, ToolProperti
     //tool schema
     abstract readonly name: string
     abstract readonly description: string
-    abstract readonly parameters: ToolParameter<properties> | {}
+    abstract readonly parameters: ToolParameter<properties> | undefined
+
+    readonly enabled: boolean = true
+
+    constructor(enabled: boolean) { 
+        this.enabled = enabled
+    }
 
     abstract parseParams(anyParam: Record<string, unknown>): param | undefined
 
     async execute(rawParam: Record<string, unknown>) : Promise<string> { 
+        if (!this.enabled) return ""
         const parsedParams = this.parseParams(rawParam)
 
         if (parsedParams === undefined) 
@@ -29,18 +36,18 @@ export abstract class Tool<param, properties extends Record<string, ToolProperti
     abstract run(params: param): Promise<string>
 
     asPrompt() : string {
-        return `
+        return !this.enabled ? `
             - ${this.name}: ${this.description}
             params: ${JSON.stringify(this.parameters)}
             format: {"tool": {"name": "${this.name}", "params": ${JSON.stringify(this.parameters)}}}
-        `
+        ` : ""
     }
 
     asDefinition() {
-        return {
+        return !this.enabled ? {
             name: this.name,
             description: this.description,
             parameters: this.parameters
-        }
+        } : {}
     }
 }

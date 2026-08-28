@@ -30,8 +30,11 @@ export class ReadFileTool extends Tool<ReadFileProp, ReadFileParam> {
 
     fileManager: Workspace
 
-    constructor(fileManager: Workspace) { 
-        super()
+    constructor(
+        enabled: boolean,
+        fileManager: Workspace
+    ) { 
+        super(enabled)
         this.fileManager = fileManager
     }
 

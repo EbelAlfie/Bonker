@@ -31,16 +31,10 @@ export class SearchCodeTool extends Tool<SearchCodeParam, SearchCodeProp> {
     }
 
     constructor(
-        {
-            llm,
-            vectorDb
-        }:
-        {
-            llm: LLM,
-            vectorDb: VectorDb
-        }
+        enabled: boolean,
+        { llm, vectorDb }: { llm: LLM, vectorDb: VectorDb }
     ) { 
-        super()
+        super(enabled)
         this.vectorDb = vectorDb
         this.llm = llm
     }
